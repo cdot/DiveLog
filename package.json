@@ -1,0 +1,23 @@
+{
+    "name": "Dive Manager",
+    "version": "0.0.1",
+    "type": "module",
+    "description": "Dive Stats Capture",
+    "private": true,
+    "scripts": {
+        "lint": "eslint src/*.js -f unix",
+        "doc": "jsdoc -c jsdoc_config.json src/*.js",
+        "test": "mocha --recursive --extension js --timeout=5000 test"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "chai": "^6.2.2",
+        "docdash": "^2.0.2",
+        "eslint": "^10.0.0",
+        "eslint-formatter-unix": "^9.0.1",
+        "jsdoc": "^4.0.5"
+    },
+    "dependencies": {
+        "globals": "^17.3.0"
+    }
+}

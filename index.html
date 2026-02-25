@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Dive Log Mobile</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script defer type="module" src="src/DiveManager.js"></script>
+    <link rel="stylesheet" href="src/DiveManager.css"
+  </head>
+  <body>
+    <div id="currentPage" class="hidden"></div>
+    <h3>Dive Log <button id="addPageButton">+</button></h3>
+    <table>
+      <tr>
+        <td><input id="site" placeholder="Site"></td>
+        <td><input id="date" type="date"></td>
+      </tr>
+      <tr>
+        <td><input id="manager" placeholder="Dive Manager"></td>
+        <td><input id="boat" placeholder="Boat"></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input id="weather" placeholder="Weather"></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <textarea id="comments" placeholder="Comments"></textarea>
+        </td>
+      </tr>
+    </table>
+    <div style="overflow-x:auto;">
+      <table id="diveTable">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <h3>Not uploaded yet</h3>
+    <div id="pages"></div>
+    <button id="uploadButton">Upload all</button>
+  </body>
+</html>
