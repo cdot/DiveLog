@@ -4,7 +4,7 @@ body {
 }
 
 .hidden {
-  /*display : none;*/
+  display:none;
 }
 
 h3 { text-align:center; }
@@ -43,14 +43,18 @@ td input {
 }
 
 button {
-  padding:14px;
-  font-weight: bold;
-  font-size:16px;
-  margin-bottom:10px;
   border:none;
   border-radius:8px;
   background:#1976D2;
   color:white;
+}
+
+.trash-can {
+  padding:0;
+  font-size:14pt;
+  margin: 0;
+  float:right;
+  padding: 0 5px 0 5px;
 }
 
 #addPageButton {
@@ -61,6 +65,11 @@ button {
 
 #uploadButton {
   width: 100%;
+  margin-top: 8px;
+  padding:14px;
+  font-weight: bold;
+  font-size:16px;
+  margin-bottom:10px;
 }
 
 button.secondary {

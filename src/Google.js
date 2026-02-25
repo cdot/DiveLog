@@ -26,8 +26,12 @@ async function initClient() {
 function authenticate() {
   return new Promise((resolve, reject) => {
     tokenClient.callback = resp => {
-      if (resp.error) reject(resp);
-      else resolve(resp);
+      if (resp.error) {
+        console.debug("Authentication failed", resp.error);
+        reject(resp);
+      }
+      else
+        resolve(resp);
     };
     tokenClient.requestAccessToken();
   });

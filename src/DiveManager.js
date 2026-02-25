@@ -1,4 +1,6 @@
+// gapi is provided by https://apis.google.com/js/api.js
 /* global gapi */
+
 import Page from "./Page.js";
 import Pages from "./Pages.js";
 import { initClient } from "./Google.js";

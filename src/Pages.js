@@ -1,3 +1,5 @@
+/* global gapi */
+import { SPREADSHEET_ID } from "../setup.js";
 import Page from "./Page.js";
 import { authenticate } from "./Google.js";
 
@@ -107,13 +109,19 @@ export default class Pages {
     for (const page of this.pages) {
       const div = document.createElement("div");
       div.id = `P${page.id}`;
-      div.className = "list-item";
-      div.innerHTML = `${page.metadata.site} on ${page.metadata.date}`;
+      div.classList.add("list-item");
+      div.textContent = `${page.metadata.site}: ${page.metadata.date}`;
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "\u{1F5D1}";
+      deleteButton.title = "Delete";
+      deleteButton.classList.add("trash-can");
+      div.append(deleteButton);
       div.addEventListener(
         "click", function() {
           self.getPageById(parseInt(this.id.substring(1)))
           .loadIntoUI();
         });
+      div.title = "Click to edit";
       element.appendChild(div);
     }
   }
@@ -122,17 +130,29 @@ export default class Pages {
     if (!this.pages.length)
       return alert("Nothing to upload.");
 
+    const rows = [];
+    for (const page of this.pages) {
+      const pageRows = page.prepareUpload();
+      rows.push(...pageRows);
+    }
+
     return authenticate()
+    .then(() => gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: "Dives",
+      valueInputOption: "RAW",
+      resource: { values: rows }
+    }))
     .then(() => {
-      let promise = Promise.resolve();
-      for (const pid of this.pages) {
-        const page = Page.loadFromLocal(pid);
-        promise = promise.then(() =>
-          page.uploadToDrive()
-          .then(page => this.remove(page))
-          .catch(err => alert(`Upload ${page.id} failed ` + err)));
-      }
-      return promise;
-    });
+      for (const page of this.pages)
+        this.removePage(page);
+      if (this.pages.length === 0)
+        // Construct a blank page
+        this.addPage(new Page());
+      this.pages[0].loadIntoUI();
+      this.reloadList();
+      alert("Uploads complete, thank you");
+    })
+    .catch(err => alert(`Upload failed ` + err));
   }
 }

@@ -1,15 +1,12 @@
-/* global gapi */
-import { SPREADSHEET_ID } from "../setup.js";
-
 // Item preamble for local store
 const LS_KEY_ROOT = "dive_page_";
 
 // Ordered list of columns for each row in the UI
 const COLUMNS = [
-  { head: "Name" },
-  { head: "Grade" },
-  { head: "Led", special: input => input.type = "checkbox" },
-  { head: "CTC", type: "select",
+  { head: "Name", title: "Diver name" },
+  { head: "Grade", title: "Diver qualification" },
+  { head: "Led", title: "Was this diver leading the pair?", special: input => input.type = "checkbox" },
+  { head: "CTC", title: "Current Tissue Code", type: "select",
     special: select => {
       for (const op of "ABCDEF".split("")) {
         const opEl = document.createElement("option");
@@ -18,13 +15,13 @@ const COLUMNS = [
       }
     }
   },
-  { head: "Cylinders" },
-  { head: "Gas in", special: input => input.type = "number" },
+  { head: "Cylinders", title: "What cylinders were used" },
+  { head: "Gas in", title: "Bar", special: input => input.type = "number" },
   { head: "Time in", special: input => input.type = "time" },
   { head: "Time out", special: input => input.type = "time" },
-  { head: "Gas out", special: input => input.type = "number" },
-  { head: "Max depth", special: input => input.type = "number" },
-  { head: "Dive time", special: input => input.type = "number" }
+  { head: "Gas out", title: "Bar", special: input => input.type = "number" },
+  { head: "Max depth", title: "metres", special: input => input.type = "number" },
+  { head: "Dive time", title: "minutes", special: input => input.type = "number" }
 ];
 
 const TIME_IN_COL = COLUMNS.findIndex(c => c.head === "Time in");
@@ -110,6 +107,8 @@ export default class Page {
         const input = document.createElement(col.type || "input");
         if (typeof col.special === "function")
           col.special(input, row);
+        if (col.title)
+          input.title = col.title;
         input.classList.add("datum");
         cell.appendChild(input);
         row.appendChild(cell);
@@ -196,8 +195,8 @@ export default class Page {
    * Append the page to the spreadsheet in the cloud.
    */
   uploadToDrive() {
-    const values = [];
-    values.push([ this.id,
+    const rows = [];
+    rows.push([ this.id,
                   this.metadata.site,
                   this.metadata.date,
                   this.metadata.manager,
@@ -205,14 +204,7 @@ export default class Page {
                   this.metadata.weather,
                   this.metadata.comments ]);
     for (const row of this.rows)
-      values.push([this.id, ...row]);
-
-    return gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: "Dives",
-      valueInputOption: "RAW",
-      resource: { values }
-    })
-    .then(() => this);
+      rows.push([this.id, ...row]);
+    return rows;
   }
 }

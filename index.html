@@ -10,19 +10,18 @@
     <link rel="stylesheet" href="src/DiveManager.css"
   </head>
   <body>
-    <div id="currentPage" class="hidden"></div>
-    <h3>Dive Log <button id="addPageButton">+</button></h3>
+    <h3>Dive Log <button title="Create a new log page" id="addPageButton">+</button></h3>
     <table>
       <tr>
-        <td><input id="site" placeholder="Site"></td>
+        <td><input id="site" title="Site" placeholder="Site"></td>
         <td><input id="date" type="date"></td>
       </tr>
       <tr>
-        <td><input id="manager" placeholder="Dive Manager"></td>
-        <td><input id="boat" placeholder="Boat"></td>
+        <td><input id="manager" title="Dive Manager" placeholder="Dive Manager"></td>
+        <td><input id="boat" title="Boat used" placeholder="Boat"></td>
       </tr>
       <tr>
-        <td colspan="2"><input id="weather" placeholder="Weather"></td>
+        <td colspan="2"><input title="Weather" id="weather" placeholder="Weather"></td>
       </tr>
       <tr>
         <td colspan="2">
@@ -36,8 +35,9 @@
         <tbody></tbody>
       </table>
     </div>
-    <h3>Not uploaded yet</h3>
+    <div id="currentPage" class="hidden"></div>
+    <h3>Not uploaded yet:</h3>
     <div id="pages"></div>
-    <button id="uploadButton">Upload all</button>
+    <button title="Upload completed logs to Drive" id="uploadButton">Upload</button>
   </body>
 </html>
