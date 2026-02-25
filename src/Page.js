@@ -194,7 +194,7 @@ export default class Page {
   /**
    * Append the page to the spreadsheet in the cloud.
    */
-  uploadToDrive() {
+  prepareUpload() {
     const rows = [];
     rows.push([ this.id,
                   this.metadata.site,
