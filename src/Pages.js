@@ -1,5 +1,4 @@
-/* global gapi */
-import { SPREADSHEET_ID } from "../setup.js";
+/* global gapi, SPREADSHEET_ID */
 import Page from "./Page.js";
 import { authenticate } from "./Google.js";
 
@@ -126,7 +125,7 @@ export default class Pages {
     }
   }
 
-  retryUploads() {
+  retryUploads(key) {
     if (!this.pages.length)
       return alert("Nothing to upload.");
 

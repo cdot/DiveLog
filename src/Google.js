@@ -1,9 +1,8 @@
-/* global gapi, google */
+/* global gapi, google, CLIENT_ID */
 /**
  * Requires https://apis.google.com/js/api.js and
  * https://accounts.google.com/gsi/client
  */
-import { CLIENT_ID } from "../setup.js";
 const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const DISCOVERY_DOC = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 
