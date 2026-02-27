@@ -1,6 +1,4 @@
-/* global gapi, SPREADSHEET_ID */
 import Page from "./Page.js";
-import { authenticate } from "./Google.js";
 
 const LS_KEY = "dive_pages";
 
@@ -11,79 +9,105 @@ export default class Pages {
 
   constructor() {
     /**
-     * List of pages
+     * Catalogue of pages. Most recent is pages[0].
      * @member {Page[]}
+     * @private
      */
     this.pages = [];
+
+    /**
+     * UID of the page currently loaded into the UI
+     * @member {number}
+     * @private
+     */
+    this.currentPageUID = undefined;
 
     // Load pages from local storage. If there are no pages there,
     // construct a new, blank, page.
     const known = localStorage.getItem(LS_KEY);
     if (known && known.length > 0) {
-      const indexes = JSON.parse(known);
-      for (const i of indexes)
+      const uids = JSON.parse(known);
+      for (const i of uids)
         this.addPage(new Page(i));
     } else
       // Construct a page from whatever is in the UI
       this.addPage(new Page(null));
 
-    this.pages[0].loadIntoUI();
-    this.reloadList();
+    this.setCurrentPage(this.pages[0]);
   }
 
-  /**
-   * Get the ID of the page currently loaded in the UI
-   * @return {number} the id of the currently loaded page
-   */
-  getUIPageId() {
-    return parseInt(document.getElementById("currentPage").textContent);
-  }
-  
   /**
    * Get the page currently loaded into the UI
    * @return {Page}
    */
-  getUIPage() {
-    return this.getPageById(this.getUIPageId());
-  }
-
-  saveToLocal() {
-    const page_ids = this.pages.map(p => p.id);
-    localStorage.setItem(LS_KEY, JSON.stringify(page_ids));
+  getCurrentPage() {
+    return this.getPageByUID(this.currentPageUID);
   }
 
   /**
-   * Add a Page
-   * @param {Page} page Page to add
+   * Set the current page in the UI.
+   * @param {number|Page} page the page to load, either a UID or the
+   * actual page.
    */
-  addPage(page) {
-    this.pages.push(page);
-    this.saveToLocal();
-  }
-
-  newPage() {
-    const page = new Page();
-    this.addPage(page);
+  setCurrentPage(page) {
+    if (typeof page === "number")
+      page = this.getPageByUID(page);
+    this.currentPageUID = page.uid;
     page.loadIntoUI();
     this.reloadList();
   }
 
   /**
+   * Save the list of page UIDs to localStorage
+   * @private
+   */
+  saveToLocal() {
+    const uids = this.pages.map(p => p.uid);
+    console.debug("Saving pages", uids);
+    localStorage.setItem(LS_KEY, JSON.stringify(uids));
+  }
+
+  /**
+   * Add a Page
+   * @param {Page} page Page to add
+   * @private
+   */
+  addPage(page) {
+    this.pages.unshift(page);
+    this.saveToLocal();
+  }
+
+  /**
+   * Construct a Page and load it into the UI. The page will be
+   * blank; the UI content will be cleared.
+   * @return {Page} the page that was created
+   */
+  newPage() {
+    const page = new Page();
+    this.addPage(page);
+    console.debug("setCurrentPage1",page.uid);
+    this.setCurrentPage(page);
+    return page;
+  }
+
+  /**
    * Remove a Page
    * @param {Page} page Page to remove
+   * @private
    */
   removePage(page) {
     this.pages.splice(this.pages.indexOf(page), 1);
     this.saveToLocal();
-    localStorage.removeItem(`page_${page.id}`);
+    localStorage.removeItem(`page_${page.uid}`);
   }
 
   /**
-   * Get a Page by id
-   * @param {number} id ID of page to find
+   * Get a Page by UID
+   * @param {number} uid UID for page to find
+   * @private
    */
-  getPageById(id)  {
-    const found = this.pages.find(p => p.id === id);
+  getPageByUID(uid)  {
+    const found = this.pages.find(p => p.uid === uid);
     return found;
   }
 
@@ -91,25 +115,26 @@ export default class Pages {
    * Update the page currently shown in the UI
    */
   updatePageFromUI() {
-    const page = this.getUIPage();
+    const page = this.getCurrentPage();
     page.updateFromUI();
-    page.saveToLocal();
-    console.debug(`Page ${page.id} saved in cache`);
     this.reloadList();
+    console.debug(`Page ${page.uid} saved in cache`);
   }
 
   /**
    * Load current pages list into the UI
+   * @private
    */
   reloadList() {
     const element = document.getElementById("pages");
     element.innerHTML = "";
     const self = this;
+    let disableUpload = true;
     for (const page of this.pages) {
       const div = document.createElement("div");
-      div.id = `P${page.id}`;
+      div.id = `P${page.uid}`;
       div.classList.add("list-item");
-      div.textContent = `${page.metadata.site}: ${page.metadata.date}`;
+      div.textContent = page.toString();
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "\u{1F5D1}";
       deleteButton.title = "Delete";
@@ -117,41 +142,46 @@ export default class Pages {
       div.append(deleteButton);
       div.addEventListener(
         "click", function() {
-          self.getPageById(parseInt(this.id.substring(1)))
-          .loadIntoUI();
+          const uid = parseInt(this.id.substring(1));
+          console.debug("setCurrentPage2",uid);
+          self.setCurrentPage(uid);
         });
       div.title = "Click to edit";
       element.appendChild(div);
+      if (page.isWorthUploading())
+        disableUpload = false;
     }
+    document.getElementById("uploadButton").disabled = disableUpload;
   }
 
-  retryUploads(key) {
-    if (!this.pages.length)
-      return alert("Nothing to upload.");
-
+  /**
+   * Upload pending pages to a spreadsheet on drive
+   * @param {CloudStore} store CloudStore to upload to
+   * @return {Promise} promise that resolves to undefined
+   */
+  upload(store) {
     const rows = [];
     for (const page of this.pages) {
-      const pageRows = page.prepareUpload();
-      rows.push(...pageRows);
+      if (page.isWorthUploading()) {
+        const pageRows = page.prepareUpload();
+        rows.push(...pageRows);
+      }
     }
 
-    return authenticate()
-    .then(() => gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: "Dives",
-      valueInputOption: "RAW",
-      resource: { values: rows }
-    }))
+    if (rows.length === 0)
+      return Promise.reject("Nothing worth uploading");
+
+    return store.upload(rows)
     .then(() => {
       for (const page of this.pages)
         this.removePage(page);
       if (this.pages.length === 0)
-        // Construct a blank page
+        // Construct a new blank page, ignoring the UI
         this.addPage(new Page());
-      this.pages[0].loadIntoUI();
-      this.reloadList();
+      console.debug("setCurrentPage3",this.pages[0].uid);
+      this.setCurrentPage(this.pages[0]);
       alert("Uploads complete, thank you");
     })
-    .catch(err => alert(`Upload failed ` + err));
+    .catch(err => alert("Upload failed: " + err));
   }
 }

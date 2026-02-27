@@ -19,6 +19,11 @@ input, textarea {
   font-size:16px;
   margin-bottom:2px;
   border:1px solid #ccc;
+  transition: width 0.2s ease;
+}
+
+input.expanded {
+  width: 100vw;
 }
 
 #diveTable {
@@ -49,6 +54,10 @@ button {
   color:white;
 }
 
+button:disabled {
+  background: silver;
+}
+
 .trash-can {
   padding:0;
   font-size:14pt;
@@ -57,10 +66,22 @@ button {
   padding: 0 5px 0 5px;
 }
 
+#gearButton {
+  padding: 5px 10px 5px 10px;
+  font-size: 24pt;
+  float:left;
+}
+
 #addPageButton {
   padding: 5px 10px 5px 10px;
   font-size: 24pt;
   float:right;
+}
+
+#settingsDoneButton {
+  margin-top: 10px;
+  padding: 5px 10px 5px 10px;
+  font-size: 14pt;
 }
 
 #uploadButton {

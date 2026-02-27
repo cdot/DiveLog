@@ -3,9 +3,16 @@ const LS_KEY_ROOT = "dive_page_";
 
 // Ordered list of columns for each row in the UI
 const COLUMNS = [
-  { head: "Name", title: "Diver name" },
+  { head: "Name", title: "Diver name",
+    special: input => {
+      input.addEventListener("focus", () => input.classList.add("expanded"));
+      input.addEventListener("blur", () => input.classList.remove("expanded"));
+    }
+  },
   { head: "Grade", title: "Diver qualification" },
-  { head: "Led", title: "Was this diver leading the pair?", special: input => input.type = "checkbox" },
+  { head: "Led", title: "Was this diver leading the pair?",
+    special: input => input.type = "checkbox"
+  },
   { head: "CTC", title: "Current Tissue Code", type: "select",
     special: select => {
       for (const op of "ABCDEF".split("")) {
@@ -36,54 +43,98 @@ export default class Page {
   /**
    * Construct a new Page object
    * @param {<number|object>?} data if an object, will populate from that.
-   * If a number, will load the page with that index from localStorage.
+   * If a number, will load the page with that id from localStorage.
    * If null it will create a new, blank page from the UI.
    * If undefined, it will create a new blank page but will ignore the UI.
    */
   constructor(data) {
-    if (typeof data === "number")
-      data = JSON.parse(localStorage.getItem(`${LS_KEY_ROOT}${data}`));
 
     if (data === null) {
+      console.debug("Construct from UI");
       // Construct a new page from data in the UI
-      this.id = Date.now();
-      document.getElementById("currentPage").textContent = this.id;
+      this.uid = Date.now();
       this.updateFromUI();
-    } else if (typeof data === "undefined") {
-      this.id = Date.now();
-      this.metadata = {
-        site: "",
-        date: this.id,
-        manager: "",
-        boat: "",
-        weather: "",
-        comments: ""
-      };
-      this.rows = [];
-    } else if (data && typeof data === "object") {
-      /**
-       * The page unique ID
-       * @member {number}
-       */
-      this.id = data.id;
-      /**
-       * Page meta-data e.g site, date etc
-       * @member {object}
-       */
-      this.metadata = data.metadata;
-      /**
-       * Array of dive data.
-       * @member {<number|string>[][]}
-       */
-      this.rows = data.rows;
+      return;
     }
+
+    if (typeof data === "number") {
+      // Load an existing page from localStorage
+      console.debug(`Construct from localStorage ${data}`);
+      data = JSON.parse(localStorage.getItem(`${LS_KEY_ROOT}${data}`));
+    }
+
+    if (data && typeof data === "object") {
+      console.debug(`Construct from data`);
+      // Construct a page from a data structure that may be another page
+      this.uid = Date.now();
+      this.date = data.date;
+      this.site = data.site;
+      this.manager = data.manager;
+      this.boat = data.boat;
+      this.weather = data.weather;
+      this.comments = data.comments;
+      this.rows = data.rows;
+      return;
+    }
+
+    // Otherwise create a new, blank, page
+    console.debug(`Construct blank`);
+
+    /**
+     * This is a number in ms, and is used to uniquely
+     * identify the page.
+     * @member {number}
+     */
+    this.uid = Date.now();
+
+    /**
+     * Date of dive(s). YYYY-MM-DD formatted date string.
+     * @member {string}
+     */
+    this.date = new Date(this.uid).toISOString().replace(/T.*$/, "");
+
+    /**
+     * Dive site
+     * @member {string}
+     */
+    this.site = "";
+
+    /**
+     * Dive Manager
+     * @member {string}
+     */
+    this.manager = "";
+
+    /**
+     * Boat, if there was one
+     * @member {string}
+     */
+    this.boat = "";
+
+    /**
+     * Description of weather
+     * @member {string}
+     */
+    this.weather = "";
+
+    /**
+     * DM's comments
+     * @member {string}
+     */
+    this.comments = "";
+
+    /**
+     * Rows in the table
+     * @member {<string|number|boolean>[][]}
+     */
+    this.rows = [];
   }
 
   /**
    * Save the page to localStorage
    */
   saveToLocal() {
-    localStorage.setItem(`${LS_KEY_ROOT}${this.id}`, JSON.stringify(this));
+    localStorage.setItem(`${LS_KEY_ROOT}${this.uid}`, JSON.stringify(this));
   }
 
   /**
@@ -154,15 +205,18 @@ export default class Page {
         rows.push(rowData);
     });
 
-    this.id = parseInt(document.getElementById("currentPage").textContent);
-    this.metadata = {
-      site: document.getElementById("site").value,
-      date: document.getElementById("date").value,
-      manager: document.getElementById("manager").value,
-      boat: document.getElementById("boat").value,
-      weather: document.getElementById("weather").value,
-      comments: document.getElementById("comments").value
-    };
+    // Make sure there's a date in the UI
+    if (!document.getElementById("date").value) {
+      document.getElementById("date").value =
+      new Date(this.uid).toISOString().replace(/T.*$/, "");
+    }
+
+    this.date = document.getElementById("date").value;
+    this.site = document.getElementById("site").value;
+    this.manager = document.getElementById("manager").value;
+    this.boat = document.getElementById("boat").value;
+    this.weather = document.getElementById("weather").value;
+    this.comments = document.getElementById("comments").value;
     this.rows = rows;
 
     this.saveToLocal();
@@ -174,13 +228,12 @@ export default class Page {
    * Replace the page shown in the UI with this page.
    */
   loadIntoUI() {
-    document.getElementById("currentPage").textContent = this.id;
-    document.getElementById("site").value = this.metadata.site;
-    document.getElementById("date").value = this.metadata.date;
-    document.getElementById("manager").value = this.metadata.manager;
-    document.getElementById("boat").value = this.metadata.boat;
-    document.getElementById("weather").value = this.metadata.weather;
-    document.getElementById("comments").value = this.metadata.comments;
+    document.getElementById("date").value = this.date;
+    document.getElementById("site").value = this.site;
+    document.getElementById("manager").value = this.manager;
+    document.getElementById("boat").value = this.boat;
+    document.getElementById("weather").value = this.weather;
+    document.getElementById("comments").value = this.comments;
     let inputs = document.querySelectorAll("#diveTable .datum");
     let i = 0;
     for (const r of this.rows) {
@@ -192,19 +245,29 @@ export default class Page {
   }
 
   /**
-   * Append the page to the spreadsheet in the cloud.
+   * Check if the page is worth uploading. There has to be at least one
+   * row.
+   * @return {boolean} true if it's worth it
+   */
+  isWorthUploading() {
+    return this.rows.length > 0;
+  }
+
+  /**
+   * Prepare flat data row for the page for adding to a spreadsheet.
+   * @return {<string|boolean|number|Date>[][]} array of rows
    */
   prepareUpload() {
-    const rows = [];
-    rows.push([ this.id,
-                  this.metadata.site,
-                  this.metadata.date,
-                  this.metadata.manager,
-                  this.metadata.boat,
-                  this.metadata.weather,
-                  this.metadata.comments ]);
-    for (const row of this.rows)
-      rows.push([this.id, ...row]);
-    return rows;
+    return this.rows.map(row =>
+      [ this.date, this.site,
+        ...row,
+        this.manager, this.boat, this.weather, this.comments ]);
+  }
+
+  /**
+   * Construct a simple string for the Upload section
+   */
+  toString() {
+    return `${this.site || "?"}:${this.date}`;
   }
 }

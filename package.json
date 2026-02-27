@@ -11,13 +11,16 @@
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
+        "body-parser": "^2.2.2",
         "chai": "^6.2.2",
+        "cors": "^2.8.6",
         "docdash": "^2.0.2",
         "eslint": "^10.0.0",
         "eslint-formatter-unix": "^9.0.1",
-        "jsdoc": "^4.0.5"
-    },
-    "dependencies": {
-        "globals": "^17.3.0"
+        "express": "^5.2.1",
+        "express-basic-auth": "^1.2.1",
+        "globals": "^17.3.0",
+        "jsdoc": "^4.0.5",
+        "posix-getopt": "^1.2.1"
     }
 }

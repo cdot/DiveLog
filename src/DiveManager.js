@@ -1,32 +1,43 @@
-// gapi is provided by https://apis.google.com/js/api.js
-/* global gapi, URLSearchParams */
-import IDS from "../ids.js";
 import Page from "./Page.js";
 import Pages from "./Pages.js";
-import { initClient } from "./Google.js";
-import { D } from "./ED.js";
+import CloudStore from "./CloudStore.js";
 
-const params = new URLSearchParams(document.location.search);
-const key = params.get("key");
-window.CLIENT_ID = D(IDS[0], key);
-window.SPREADSHEET_ID = D(IDS[1], key);
+function settings() {
+  const main = document.getElementById("main");
+  const settings = document.getElementById("settings");
+  main.classList.add("hidden");
+  settings.classList.remove("hidden");
 
+  const key = document.getElementById("key");
+  key.value = CloudStore.getKey();
+  document.getElementById("settingsDoneButton").addEventListener(
+    "click", () => {
+      CloudStore.setKey(key.value);
+      window.location.reload();
+    });
+}
+
+let cloudStore, pages;
+
+// Initialise UI
 Page.createRows(10);
-
-const pages = new Pages();
-
-gapi.load("client", initClient);
-
-document.getElementById("uploadButton")
-.addEventListener("click", () => pages.retryUploads(key));
-
 document.getElementById("addPageButton")
 .addEventListener("click", () => pages.newPage());
+document.getElementById("gearButton")
+.addEventListener("click", settings);
+document.getElementById("uploadButton")
+.addEventListener("click", () => pages.upload(cloudStore));
+for (const input of document.querySelectorAll("input,select,textarea")) {
+  input.addEventListener("change", () => pages.updatePageFromUI());
+}
 
-for (const input of document.querySelectorAll("input,select,textarea"))
-  input.addEventListener("change", () => {
-    pages.updatePageFromUI();
-  });
+// Create local DB
+pages = new Pages();
+
+// Create cloud store
+let storeClass = CloudStore.getKey(0) || "CloudStore";
+import(`./${storeClass}.js`)
+.then(storeClass => cloudStore = new (storeClass.default)());
 
 // Register service worker
 if ('serviceWorker' in navigator) {
