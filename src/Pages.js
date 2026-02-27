@@ -85,7 +85,6 @@ export default class Pages {
   newPage() {
     const page = new Page();
     this.addPage(page);
-    console.debug("setCurrentPage1",page.uid);
     this.setCurrentPage(page);
     return page;
   }
@@ -143,7 +142,6 @@ export default class Pages {
       div.addEventListener(
         "click", function() {
           const uid = parseInt(this.id.substring(1));
-          console.debug("setCurrentPage2",uid);
           self.setCurrentPage(uid);
         });
       div.title = "Click to edit";
@@ -178,7 +176,6 @@ export default class Pages {
       if (this.pages.length === 0)
         // Construct a new blank page, ignoring the UI
         this.addPage(new Page());
-      console.debug("setCurrentPage3",this.pages[0].uid);
       this.setCurrentPage(this.pages[0]);
       alert("Uploads complete, thank you");
     })

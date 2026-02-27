@@ -54,8 +54,6 @@ const server = new Express();
 
 server.use(Cors());
 
-console.debug(users);
-
 if (Object.keys(users).length > 0) {
   console.debug("BasicAuth enabled");
   server.use(BasicAuth({
