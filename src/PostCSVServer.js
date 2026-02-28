@@ -1,22 +1,16 @@
 /**
  * Server that only accepts POST requests and appends request body
- * to a local CSV file.
-  */
+ * to a local CSV file. Can be used in conjunction with PostCSV.
+ */
+/* global process */
 import { promises as Fs } from "fs";
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-import Path from "path";
-const __dirname = Path.dirname(__filename);
 
 import Cors from "cors";
 import Express from "express";
 import BasicAuth from "express-basic-auth";
 import bodyParser from "body-parser";
 import HTTP from "http";
-import HTTPS from "https";
 import Getopt from "posix-getopt";
-
-const DISTRIBUTION = Path.normalize(Path.join(__dirname, "..", ".."));
 
 const DESCRIPTION = [
   "DESCRIPTION\nServer giving GET/POST access to static files and database, and AJAX requests for reading sensors attached to host Raspberry Pi.",
@@ -36,16 +30,15 @@ const go_parser = new Getopt.BasicParser(
 let port = 80, csvFile = "dives.csv", users = [];
 let option;
 while ((option = go_parser.getopt())) {
+  let up;
   switch (option.option) {
-
-  case "h": console.log(DESCRIPTION); process.exit();
   case "p": port = option.optarg; break;
-  case "u": {
-    const up = option.optarg.split(":");
+  case "u":
+    up = option.optarg.split(":");
     users[up[0]] = up[1];
     break;
-  }
   case 'f': csvFile = true; break;
+  case "h": console.log(DESCRIPTION); process.exit(); break;
   default: throw Error(`Unknown option -${option.option}\n${DESCRIPTION}`);
   }
 }

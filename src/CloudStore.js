@@ -3,8 +3,16 @@
  */
 export default class CloudStore {
 
+  /**
+   * Key used to store the key in localStore
+   */
   static KEY_ID = "CloudStore_Key";
 
+  /**
+   * Name of the sheet to append to in spreadsheets
+   */
+  static SHEET_NAME = "Dives";
+  
   constructor() {
     console.debug(`Store is ${this.constructor.name}`);
   }
@@ -33,10 +41,11 @@ export default class CloudStore {
 
   /**
    * Upload row data to the cloud store
-   * @return {Promise} Promise that resolves when the upload is complete
-   * or is rejected if it fails.
+   * @return {Promise<number>} Promise that resolves to the number of rows
+   * written when the upload is complete.
    */
   upload(rows) {
+    console.debug("Cannot upload", rows);
     return Promise.reject("Incorrect upload key");
   }
 }

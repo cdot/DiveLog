@@ -34,6 +34,9 @@ DriveSheet|911230958074-jqbsdoiqv6n243jf92kas09f9akf30r8.apps.googleusercontent.
 ```
 The spreadsheet you upload to must have a page called "Dives" in it, and must be writable by the people who will be uploading dive logs.
 
+### Excel sheet on Microsoft OneDrive
+There is an untested implementation of OneDrive. This store requires two fields in the key. The second field is a client id (from the Azure project) and the third is a spreadsheet id (extracted from the URL of your spreadsheet.
+
 ### POST store
 If you have your own server implementation (e.g. using `express`) you can POST
 to the server to upload CSV data to the store. The URL endpoint is required in the key. For example:

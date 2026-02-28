@@ -28,7 +28,7 @@ export default class PostCSV extends CloudStore {
     console.debug("Uploading", csv);
 
     let url = CloudStore.getKey(1);
-    const m = /([^:\/]+:[^:\/]*)@/.exec(url);
+    const m = /([^:/]+:[^:/]*)@/.exec(url);
     const headers = new Headers();
     headers.set("Content-type", "text/csv; charset=UTF-8");
     if (m) {

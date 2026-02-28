@@ -61,7 +61,7 @@ export default class DriveSheet extends CloudStore {
     return this.authenticate()
     .then(() => gapi.client.sheets.spreadsheets.values.append({
       spreadsheetId: CloudStore.getKey(2),
-      range: "Dives",
+      range: CloudStore.SHEET_NAME,
       valueInputOption: "RAW",
       resource: { values: rows }
     }));
