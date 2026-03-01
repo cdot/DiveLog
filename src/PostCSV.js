@@ -16,6 +16,57 @@ export default class PostCSV extends CloudStore {
    * @override
    */
   upload(rows) {
+
+    function prompt(err) {
+      return new Promise((resolve, reject) => {
+        fetch("./src/PostCSVLogin.html")
+        .then(response => response.text())
+        .then(html => {
+          const container = document.createElement("div");
+          container.innerHTML = html;
+          document.body.appendChild(container);
+
+          const loginBtn = document.getElementById("loginBtn");
+          const cancelBtn = document.getElementById("cancelBtn");
+          const errorBox = document.getElementById("loginError");
+          errorBox.textContent = err;
+          loginBtn.addEventListener("click", () => {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            localStorage.setItem("DiveLog_a", `${username}:${password}`);
+
+            container.remove();
+            resolve();
+          });
+
+          cancelBtn.addEventListener("click", () => {
+            container.remove();
+            reject("Upload cancelled");
+          });
+        });
+      });
+    }
+
+    function fetchWithAuth(url, options) {
+      const auth = localStorage.getItem("DiveLog_a");
+      if (auth) {
+        options.headers.set("Authorization", `Basic ${btoa(auth)}`);
+      }
+
+      return fetch(url, options)
+      .then(response => {
+        if (!response.ok) {
+          if (response.status === 401) {
+            return prompt(`${response.status}: ${response.statusText}`)
+            .then(() => fetchWithAuth(url, options));
+          }
+          throw new Error(response.status);
+        }
+        return true;
+      });
+    }
+
     if (rows.length === 0)
       return Promise.reject("Nothing to upload");
     let csv = "";
@@ -28,21 +79,12 @@ export default class PostCSV extends CloudStore {
     console.debug("Uploading", csv);
 
     let url = CloudStore.getKey(1);
-    const m = /([^:/]+:[^:/]*)@/.exec(url);
     const headers = new Headers();
     headers.set("Content-type", "text/csv; charset=UTF-8");
-    if (m) {
-      headers.set("Authorization", `Basic ${btoa(m[1])}`);
-      url = url.replace(m[0], "");
-    }
-    return fetch(url, {
+    return fetchWithAuth(url, {
       method: "POST",
       body: csv,
       headers: headers
-    })
-    .then(async response => {
-      if (!response.ok)
-        throw new Error(response.status);
     });
   }
 }

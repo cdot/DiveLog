@@ -52,7 +52,12 @@ if (Object.keys(users).length > 0) {
   server.use(BasicAuth({
     users: users,
     challenge: true,
-    realm: "Dive Club Resources"
+    realm: "PostCSV Server",
+    unauthorizedResponse: req => {
+      return req.auth
+      ? ('Credentials ' + req.auth.user + ':' + req.auth.password + ' rejected')
+      : 'No credentials provided';
+    }
   }));
 }
 
@@ -73,5 +78,7 @@ server.post("/upload", (req, res) => {
   });
 });
 
-HTTP.Server(server).listen(port);
+console.debug(`Started server on port ${port}`);
+//HTTP.Server(server).listen(port);
+server.listen(port);
 

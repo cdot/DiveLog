@@ -1,4 +1,5 @@
 import Page from "./Page.js";
+import CloudStore from "./CloudStore.js";
 
 const LS_KEY = "dive_pages";
 
@@ -149,8 +150,7 @@ export default class Pages {
       if (page.isWorthUploading())
         disableUpload = false;
     }
-    if (disableUpload)
-      document.getElementById("uploadButton").disabled = true;
+    document.getElementById("uploadButton").disabled = disableUpload;
   }
 
   /**

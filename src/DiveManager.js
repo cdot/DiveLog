@@ -36,18 +36,18 @@ pages = new Pages();
 
 // Create cloud store
 const k = CloudStore.getKey();
-if (!k || k === "")
-  document.getElementById("uploadButton").disabled = true;
-
-let storeClass = CloudStore.getKey(0) || "CloudStore";
-import(`./${storeClass}.js`)
-.then(storeClass => {
-  cloudStore = new (storeClass.default)();
-})
-.catch(e => {
-  document.getElementById("uploadButton").disabled = true;
-  alert(`Could not load store module '${storeClass}' - check your upload key!`);
-});
+if (!k || k === "") {
+  // No upload key, hide the upload button
+  document.getElementById("uploadButton").classList.add("hidden");
+} else {
+  let storeClass = CloudStore.getKey(0) || "CloudStore";
+  import(`./${storeClass}.js`)
+  .then(ex => cloudStore = new (ex.default)())
+  .catch(e => {
+    document.getElementById("uploadButton").disabled = true;
+    alert(`Could not load store module '${storeClass}' - check your upload key!`);
+  });
+}
 
 // Register service worker
 if ('serviceWorker' in navigator) {
