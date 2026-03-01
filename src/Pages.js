@@ -149,7 +149,8 @@ export default class Pages {
       if (page.isWorthUploading())
         disableUpload = false;
     }
-    document.getElementById("uploadButton").disabled = disableUpload;
+    if (disableUpload)
+      document.getElementById("uploadButton").disabled = true;
   }
 
   /**

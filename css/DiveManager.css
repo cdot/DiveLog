@@ -61,15 +61,9 @@ button:disabled {
 .trash-can {
   padding:0;
   font-size:14pt;
-  margin: 0;
+  margin-top: -5px;
   float:right;
   padding: 0 5px 0 5px;
-}
-
-#gearButton {
-  padding: 5px 10px 5px 10px;
-  font-size: 24pt;
-  float:left;
 }
 
 #addPageButton {
@@ -84,13 +78,23 @@ button:disabled {
   font-size: 14pt;
 }
 
+.uploadBar {
+  display:flex;
+  margin-top:8px;
+}
+
 #uploadButton {
-  width: 100%;
-  margin-top: 8px;
+  flex:1;
   padding:14px;
   font-weight: bold;
   font-size:16px;
-  margin-bottom:10px;
+  margin-right:10px;
+}
+
+#gearButton {
+  padding: 0 10px 0 10px;
+  font-size: 16pt;
+  height: 48px;
 }
 
 button.secondary {

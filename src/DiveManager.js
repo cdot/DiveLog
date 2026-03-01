@@ -20,7 +20,7 @@ function settings() {
 let cloudStore, pages;
 
 // Initialise UI
-Page.createRows(10);
+Page.createHTMLTable(10);
 document.getElementById("addPageButton")
 .addEventListener("click", () => pages.newPage());
 document.getElementById("gearButton")
@@ -35,9 +35,19 @@ for (const input of document.querySelectorAll("input,select,textarea")) {
 pages = new Pages();
 
 // Create cloud store
+const k = CloudStore.getKey();
+if (!k || k === "")
+  document.getElementById("uploadButton").disabled = true;
+
 let storeClass = CloudStore.getKey(0) || "CloudStore";
 import(`./${storeClass}.js`)
-.then(storeClass => cloudStore = new (storeClass.default)());
+.then(storeClass => {
+  cloudStore = new (storeClass.default)();
+})
+.catch(e => {
+  document.getElementById("uploadButton").disabled = true;
+  alert(`Could not load store module '${storeClass}' - check your upload key!`);
+});
 
 // Register service worker
 if ('serviceWorker' in navigator) {

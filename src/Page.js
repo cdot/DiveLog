@@ -3,17 +3,20 @@ const LS_KEY_ROOT = "dive_page_";
 
 // Ordered list of columns for each row in the UI
 const COLUMNS = [
-  { head: "Name", title: "Diver name",
+  { head: "Name",
+    title: "Diver name",
     special: input => {
       input.addEventListener("focus", () => input.classList.add("expanded"));
       input.addEventListener("blur", () => input.classList.remove("expanded"));
     }
   },
-  { head: "Grade", title: "Diver qualification" },
-  { head: "Led", title: "Was this diver leading the pair?",
+  { head: "Grade", title: "Diver qualification", width: "3em" },
+  { head: "Led", title: "Was this diver leading the buddy pair?",
     special: input => input.type = "checkbox"
   },
-  { head: "CTC", title: "Current Tissue Code", type: "select",
+  { head: "CTC", title: "Current Tissue Code",
+    width: "3em",
+    type: "select",
     special: select => {
       for (const op of "ABCDEF".split("")) {
         const opEl = document.createElement("option");
@@ -23,12 +26,12 @@ const COLUMNS = [
     }
   },
   { head: "Cylinders", title: "What cylinders were used" },
-  { head: "Gas in", title: "Bar", special: input => input.type = "number" },
+  { head: "Gas in", title: "Bar", special: input => input.type = "number", width: "4em" },
   { head: "Time in", special: input => input.type = "time" },
   { head: "Time out", special: input => input.type = "time" },
-  { head: "Gas out", title: "Bar", special: input => input.type = "number" },
-  { head: "Max depth", title: "metres", special: input => input.type = "number" },
-  { head: "Dive time", title: "minutes", special: input => input.type = "number" }
+  { head: "Gas out", title: "Bar", special: input => input.type = "number", width: "4em" },
+  { head: "Max depth", title: "metres", special: input => input.type = "number" , width: "5em" },
+  { head: "Dive time", title: "minutes", special: input => input.type = "number", width: "5em" }
 ];
 
 const TIME_IN_COL = COLUMNS.findIndex(c => c.head === "Time in");
@@ -140,26 +143,31 @@ export default class Page {
   /**
    * Create table rows in the UI. This is only called once, during
    * HTML creation.
-   * @param {number} num number of page rows to create
+   * @param {number} num number of table rows to create
    */
-  static createRows(num = 10) {
+  static createHTMLTable(num = 10) {
     const thr = document.querySelector("#diveTable thead tr");
     for (const col of COLUMNS) {
-      const th = document.createElement("th");
-      th.textContent = col.head;
-      thr.appendChild(th);
+      const cell = document.createElement("th");
+      cell.textContent = col.head;
+      if (col.width)
+        cell.style.width = col.width;
+      thr.appendChild(cell);
     }
 
     const tbody = document.querySelector("#diveTable tbody");
-    for (let i = 0; i < num; i++) {
+    for (let rowi = 0; rowi < num; rowi++) {
       const row = document.createElement("tr");
       for (const col of COLUMNS) {
         const cell = document.createElement("td");
         const input = document.createElement(col.type || "input");
         if (typeof col.special === "function")
           col.special(input, row);
+        input.placeholder = col.head;
         if (col.title)
           input.title = col.title;
+        if (col.width)
+          cell.style.width = col.width;
         input.classList.add("datum");
         cell.appendChild(input);
         row.appendChild(cell);
