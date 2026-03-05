@@ -10,10 +10,10 @@ Cloud services supported by default are Google Drive and a custom server, but it
 The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/DiveLog), or you can clone your own copy and host it yourself. It should work in any browser that supports HTML5.
 
 # Usage
-1 Visit the host website to open the app in your browser.
-2 (Optional, first time only) click on the gear icon in the bottom right and paste the upload key that your system administrator or Diving Officer has given you (you can do this any time before you upload).
-3 Enter your dives. You can enter as many as you like, they will be recorded locally.
-5 When you have internet again, click "Upload" to upload your recorded dive logs. You will probably be asked for login information for the cloud store.
+1. Visit the host website to open the app in your browser.
+2. (Optional, first time only) click on the gear icon in the bottom right and paste the upload key that your system administrator or Diving Officer has given you (you can do this any time before you upload).
+3. Enter your dives. You can enter as many as you like, they will be recorded locally.
+5. When you have internet again, click "Upload" to upload your recorded dive logs. You will probably be asked for login information for the cloud store.
 
 # System Administrators
 The upload function is configured from an "upload key" that you give to users. This is a `|`-separated key string that may have many components, depending on the requirements of the store implementation. The first component is always the name of the store class to use, e.g. `DriveSheet` or `PostCSV`. The remaining components differ for each different type of upload targets. It should be fairly easy to implement other upload interfaces e.g `WebDAVStore` or `OneDriveStore` if you need them.
