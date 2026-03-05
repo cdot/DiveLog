@@ -47,6 +47,7 @@ There is an untested implementation of OneDrive. This store needs two fields in 
 ```
 OneDrive|<client id>|<spreadsheet id>
 ```
+You will probably need a similar proxy approach as used for Google Drive to avoid issues with client secrets.
 
 ### POST store
 If you have your own server implementation (e.g. using `express`) you can POST
@@ -54,5 +55,5 @@ to the server to upload CSV data to the store. The URL endpoint is required in t
 ```
 PostCSV|https://my.server/uploadDiveLogs|user|password
 ```
-The DiveLogs repository includes an implementation of a suitable server in `src/PostCSVServer.js`.
+The DiveLogs repository includes a trivial implementation of a suitable server in `src/PostCSVServer.js`.
 
