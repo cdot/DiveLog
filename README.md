@@ -33,9 +33,8 @@ First log out of all Google accounts in the browser, then log in to Google Drive
 6. Create a "Hello World!" worker
 7. Click "Edit code" and paste the content of `src/DriveSheet_CloudflareWorker.js`
 8. Deploy the worker. Copy the cloudflare deployment ID  e.g. `sheet-proxy-d909.myusername.workers.dev`.
-9. Make a key for sharing with your users:
+9. Make a key for sharing with your users in the format `DriveSheet|<cloudflare ID>|<appscript ID>` e.g.
 ```
-DriveSheet|<cloudflare ID>|<appscript ID>
 DriveSheet|sheet-proxy-d909.myusername.workers.dev|AKffhgkY4a1umthcAfpkHoaeksPWtAT-q4KBZa5SJVHKyXF-MYZfk8KeDqrn8CjJkMuFIteb
 ```
 By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this.
