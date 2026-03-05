@@ -9,7 +9,6 @@ import Cors from "cors";
 import Express from "express";
 import BasicAuth from "express-basic-auth";
 import bodyParser from "body-parser";
-import HTTP from "http";
 import Getopt from "posix-getopt";
 
 const DESCRIPTION = [

@@ -1,5 +1,4 @@
 import Page from "./Page.js";
-import CloudStore from "./CloudStore.js";
 
 const LS_KEY = "dive_pages";
 
@@ -53,6 +52,7 @@ export default class Pages {
   setCurrentPage(page) {
     if (typeof page === "number")
       page = this.getPageByUID(page);
+    console.debug(`Setting UI to page ${page.uid}`);
     this.currentPageUID = page.uid;
     page.loadIntoUI();
     this.reloadList();
@@ -64,7 +64,7 @@ export default class Pages {
    */
   saveToLocal() {
     const uids = this.pages.map(p => p.uid);
-    console.debug("Saving pages", uids);
+    console.debug("Saving page index", uids.join(","));
     localStorage.setItem(LS_KEY, JSON.stringify(uids));
   }
 
@@ -74,6 +74,7 @@ export default class Pages {
    * @private
    */
   addPage(page) {
+    console.debug(`Adding page ${page.uid}`);
     this.pages.unshift(page);
     this.saveToLocal();
   }
@@ -96,9 +97,10 @@ export default class Pages {
    * @private
    */
   removePage(page) {
+    console.debug(`Removing ${page.uid} ${this.pages.length}`);
     this.pages.splice(this.pages.indexOf(page), 1);
+    page.removeFromLocal();
     this.saveToLocal();
-    localStorage.removeItem(`page_${page.uid}`);
   }
 
   /**
@@ -171,9 +173,9 @@ export default class Pages {
       return Promise.reject("Nothing worth uploading");
 
     return store.upload(rows)
-    .then(() => {
-      for (const page of this.pages)
-        this.removePage(page);
+    .then(removed => {
+      for (const uid of removed)
+        this.removePage(this.getPageByUID(uid));
       if (this.pages.length === 0)
         // Construct a new blank page, ignoring the UI
         this.addPage(new Page());

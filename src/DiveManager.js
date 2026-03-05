@@ -44,6 +44,7 @@ if (!k || k === "") {
   import(`./${storeClass}.js`)
   .then(ex => cloudStore = new (ex.default)())
   .catch(e => {
+    console.debug(e);
     document.getElementById("uploadButton").disabled = true;
     alert(`Could not load store module '${storeClass}' - check your upload key!`);
   });

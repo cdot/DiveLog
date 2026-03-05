@@ -141,6 +141,13 @@ export default class Page {
   }
 
   /**
+   * Remove the page from localStorage
+   */
+  removeFromLocal() {
+    localStorage.removeItem(`${LS_KEY_ROOT}${this.uid}`);
+  }
+
+  /**
    * Create table rows in the UI. This is only called once, during
    * HTML creation.
    * @param {number} num number of table rows to create
@@ -267,7 +274,7 @@ export default class Page {
    */
   prepareUpload() {
     return this.rows.map(row =>
-      [ this.date, this.site,
+      [ this.uid, this.date, this.site,
         ...row,
         this.manager, this.boat, this.weather, this.comments ]);
   }
