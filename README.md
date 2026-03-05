@@ -1,8 +1,10 @@
 # DiveLog
 Web app to capture dive logs and upload them to the cloud. The app is written specifically for [BSAC](http://bsac.com) Dive Managers who need to capture and submit dive logs to their Diving Officer. It allows offline capture of dive logs, and upload once internet is available again. Dive logs can be automatically appended to a spreadsheet in the cloud that your Diving Officer can review and analyse.
+
 ![empty dive log](images/filled.png)
 
-Supported cloud services include a spreadsheet on Google Drive, and upload to a custom server, but it should be fairly straightforward to add other cloud stores (an example Microsoft OneDrive module is included).
+Cloud services supported by default are Google Drive and a custom server, but it should be fairly straightforward to add other services (an example Microsoft OneDrive module that might work is included).
+
 ![google sheet](images/result.png)
 
 The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/DiveLog), or you can clone your own copy and host it yourself. It should work in any browser that supports HTML5.
@@ -19,7 +21,7 @@ The upload function is configured from an "upload key" that you give to users. T
 ## Stores
 
 ### Spreadsheet on Google Drive
-(Unfortunately Google makes this more awkward than it should be. We have to use Cloudflare as a proxy to get CORS handled correctly.)
+(Unfortunately Google makes this more clumsy than it should be. We have to use Cloudflare as a proxy to get CORS handled correctly.)
 
 First log out of all Google accounts in the browser, then log in to Google Drive as the user who is going to receive spreadsheet updates.
 1. Create a spreadsheet. Select Extensions -> Apps Script
