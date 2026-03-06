@@ -10,7 +10,7 @@ Several common cloud services are supported by default, and it should be fairly 
 
 The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/DiveLog), or you can clone your own copy and host it yourself. It should work in any browser that supports HTML5.
 
-# Usage
+# Users
 
 1. Visit the host website to [open the app](https://cdot.github.io/DiveLog) in your browser.
 2. (Optional, first time only) click on the gear icon in the bottom right and paste the upload key that your system administrator or Diving Officer has given you (you can do this any time before you upload).
