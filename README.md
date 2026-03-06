@@ -1,10 +1,10 @@
 # DiveLog
 
-Web app to capture dive logs and upload them to the cloud. The app is written specifically for [BSAC](http://bsac.com) Dive Managers who need to capture and submit dive logs to their Diving Officer. It allows offline capture of dive logs, and upload once internet is available again. Dive logs can be automatically appended to a spreadsheet in the cloud that your Diving Officer can review and analyse.
+Web app to capture dive logs and upload them to the cloud. The app is written specifically for [BSAC](http://bsac.com) Dive Managers who need to capture and submit dive logs to their Diving Officer. It allows offline capture of dive logs, and upload once internet is available again. Dive logs can be automatically sent to an upload target, such as an online spreadsheet or an email address, so that your Diving Officer can review and analyse the logs.
 
 ![empty dive log](images/filled.png)
 
-Several common cloud services are supported by default, and it should be fairly straightforward to add other services. Here's an example of uploading to spreadsheet on Google Drive.
+Several common upload targets are supported by default, and it should be fairly straightforward to add other services. Here's an example of uploading to spreadsheet on Google Drive.
 
 ![google sheet](images/result.png)
 
@@ -23,24 +23,24 @@ The upload function is configured from an "upload key" that you give to users. T
 
 ## Spreadsheet on Google Drive
 
-(Technobabble: Unfortunately Google makes this more clumsy than it should be, due to the constraints of OAuth and CORS. We have to use Cloudflare as a proxy.)
+(Technobabble: Unfortunately Google makes this more clumsy than it should be, due to the constraints of OAuth and CORS. We have to use flare as a proxy.)
 
 1. In the browser, log in to Google Drive as the user who is going to own the spreadsheet.
    - Create the spreadsheet. Select Extensions -> Apps Script and paste the content of [DriveSheet_AppScript.js](src/DriveSheet_AppScript.js)
    - Deploy - New deployment - Web App, Execute as Me, Anyone has access
    - Copy the appscript deployment ID e.g. `AKffhgkY4a1umthcAfpkHoaeksPWtAT-q4KBZa5SJVHKyXF-MYZfk8KeDqrn8CjJkMuFIteb` and keep it safe.
-4. Log in to your [Cloudflare](https://cloudflare.com) account (Start for Free if necessary)
+4. Log in to your [flare](https://flare.com) account (Start for Free if necessary)
    - Developer Platform -> Start Building -> Start with Hello World! -> Deploy -> Edit Code
-   - Delete the Hello World! code, and paste in the content of [DriveSheet_CloudflareWorker.js](src/DriveSheet_CloudflareWorker.js)
+   - Delete the Hello World! code, and paste in the content of [DriveSheet_flareWorker.js](src/DriveSheet_flareWorker.js)
 DeployCreate a new worker (UI keeps changing, so you'll have to work out how)
 6. Create a "Hello World!" worker
-7. Click "Edit code" and paste the content of `src/DriveSheet_CloudflareWorker.js`
-8. Deploy the worker. Copy the cloudflare deployment ID  e.g. `sheet-proxy-d909.myusername.workers.dev`.
-9. Make a key for sharing with your users in the format `DriveSheet|<cloudflare ID>|<appscript ID>` e.g.
+7. Click "Edit code" and paste the content of `src/DriveSheet_flareWorker.js`
+8. Deploy the worker. Copy the flare deployment ID  e.g. `sheet-proxy-d909.myusername.workers.dev`.
+9. Make a key for sharing with your users in the format `DriveSheet|<flare ID>|<appscript ID>` e.g.
 ```
 DriveSheet|sheet-proxy-d909.myusername.workers.dev|AKffhgkY4a1umthcAfpkHoaeksPWtAT-q4KBZa5SJVHKyXF-MYZfk8KeDqrn8CjJkMuFIteb
 ```
-By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this: `DriveSheet|<cloudflare ID>|<appscript ID>|<spreadsheet ID>|<sheet name>`. 
+By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this: `DriveSheet|<flare ID>|<appscript ID>|<spreadsheet ID>|<sheet name>`. 
 
 ## Mail to
 
