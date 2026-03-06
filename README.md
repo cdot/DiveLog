@@ -4,7 +4,7 @@ Web app to capture dive logs and upload them to the cloud. The app is written sp
 
 ![empty dive log](images/filled.png)
 
-Several common cloud services are supported by default, and it should be fairly straightforward to add other services.
+Several common cloud services are supported by default, and it should be fairly straightforward to add other services. Here's an example of uploading to spreadsheet on Google Drive.
 
 ![google sheet](images/result.png)
 
@@ -12,10 +12,10 @@ The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/D
 
 # Usage
 
-1. Visit the host website to open the app in your browser.
+1. Visit the host website to [open the app](https://cdot.github.io/DiveLog) in your browser.
 2. (Optional, first time only) click on the gear icon in the bottom right and paste the upload key that your system administrator or Diving Officer has given you (you can do this any time before you upload).
 3. Enter your dives. You can enter as many as you like, they will be recorded locally.
-5. When you have internet again, click "Upload" to upload your recorded dive logs. You can can choose to add several different upload targets, depending on your what your club(s) use.
+5. When you have internet again, click "Upload" to upload your recorded dive logs. You can can add several different upload targets if you need to, depending on your what your club(s) use.
 
 # System Administrators
 
