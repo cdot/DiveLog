@@ -19,37 +19,36 @@ The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/D
 
 # System Administrators
 
-The upload function is configured from an "upload key" that you give to users. This is a `|`-separated key string that may have many components, depending on the requirements of the store implementation. The first component is always the name of the store class to use, e.g. `DriveSheet` or `PostCSV`. The remaining components differ for each different type of upload target.
+The upload function is configured from an "upload key" that you give to users. This is a `|`-separated key string that may have many components, depending on the requirements of the store implementation. The first component is always the name of the upload target type, e.g. `DriveSheet` or `PostCSV` or `MailTo`. The remaining components differ for each different type.
 
-## Spreadsheet on Google Drive
+## DriveSheet
 
-(Technobabble: Unfortunately Google makes this more clumsy than it should be, due to the constraints of OAuth and CORS. We have to use flare as a proxy.)
+Append to a spreadsheet on Google Drive.
+
+(Technobabble: Unfortunately Google makes this more clumsy than it should be, due to the constraints of OAuth and CORS. We have to use Cloudflare as a proxy.)
 
 1. In the browser, log in to Google Drive as the user who is going to own the spreadsheet.
    - Create the spreadsheet. Select Extensions -> Apps Script and paste the content of [DriveSheet_AppScript.js](src/DriveSheet_AppScript.js)
    - Deploy - New deployment - Web App, Execute as Me, Anyone has access
    - Copy the appscript deployment ID e.g. `AKffhgkY4a1umthcAfpkHoaeksPWtAT-q4KBZa5SJVHKyXF-MYZfk8KeDqrn8CjJkMuFIteb` and keep it safe.
-4. Log in to your [flare](https://flare.com) account (Start for Free if necessary)
-   - Developer Platform -> Start Building -> Start with Hello World! -> Deploy -> Edit Code
-   - Delete the Hello World! code, and paste in the content of [DriveSheet_flareWorker.js](src/DriveSheet_flareWorker.js)
-DeployCreate a new worker (UI keeps changing, so you'll have to work out how)
-6. Create a "Hello World!" worker
-7. Click "Edit code" and paste the content of `src/DriveSheet_flareWorker.js`
-8. Deploy the worker. Copy the flare deployment ID  e.g. `sheet-proxy-d909.myusername.workers.dev`.
-9. Make a key for sharing with your users in the format `DriveSheet|<flare ID>|<appscript ID>` e.g.
+4. Log in to your [Cloudflare](https://cloudflare.com) account (Start for Free if necessary)
+5. Create a "Hello World!" worker
+6. Click "Edit code" and paste the content of `src/DriveSheet_CloudflareWorker.js`
+7. Deploy the worker. Copy the cloudflare deployment ID  e.g. `sheet-proxy-d909.myusername.workers.dev`.
+8. Make a key for sharing with your users in the format `DriveSheet|<cloudflare ID>|<appscript ID>` e.g.
 ```
 DriveSheet|sheet-proxy-d909.myusername.workers.dev|AKffhgkY4a1umthcAfpkHoaeksPWtAT-q4KBZa5SJVHKyXF-MYZfk8KeDqrn8CjJkMuFIteb
 ```
-By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this: `DriveSheet|<flare ID>|<appscript ID>|<spreadsheet ID>|<sheet name>`. 
+By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this: `DriveSheet|<cloudflare ID>|<appscript ID>|<spreadsheet ID>|<sheet name>`. 
 
-## Mail to
+## MailTo
 
 You can compose mail for sending the logs. The key format is `MailTo|<mail recipient(s)>` where <mail recipient(s)> is a comma-separated list of email addresses who will be sent the mail. The rows in the log can either be formatted as comma-separated values (CSV, the default) or as a fancy text table (add `|tab` to the end of the key).
 
-## Post CSV store
+## PostCSV
 
 If you have your own server you can POST to the server to upload CSV data. The key format is `PostCSV|<endpoint URL>|<username>|<password>` e.g. `PostCSV|https://my.server/uploadDiveLogs|myuser|secret`. The repository includes a trivial node.js implementation of a suitable server in [PostCSVServer.js](src/PostCSVServer.js).
 
-### Excel sheet on Microsoft OneDrive
+### OneDrive
 
-There is an untested implementation for OneDrive, written by ChatGPT. It might work, but you will probably need a similar proxy approach as used for Google Drive to avoid issues with OAuth.
+There is an untried implementation for uploading to en Excel sheet on OneDrive, written by ChatGPT. It might work, but you will probably need a similar proxy approach as used for Google Drive to avoid issues with OAuth.
