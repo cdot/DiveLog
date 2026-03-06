@@ -139,7 +139,7 @@ export default class Pages {
       div.textContent = page.shortText();
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "\u{1F5D1}";
-      deleteButton.title = "Delete";
+      deleteButton.title = "Delete this record. Be careful, you cannot undo!";
       deleteButton.classList.add("trash-can");
       div.append(deleteButton);
       div.addEventListener(

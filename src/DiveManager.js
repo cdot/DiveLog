@@ -100,6 +100,9 @@ document.querySelectorAll("#main input,select,textarea")
 .forEach(input =>
   input.addEventListener("change", () => pages.updatePageFromUI()));
 
+document.getElementById("about")
+.addEventListener("click", () => openDialog("aboutDialog"));
+
 // Create local DB
 pages = new Pages();
 
