@@ -15,7 +15,7 @@ The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/D
 1. Visit the host website to open the app in your browser.
 2. (Optional, first time only) click on the gear icon in the bottom right and paste the upload key that your system administrator or Diving Officer has given you (you can do this any time before you upload).
 3. Enter your dives. You can enter as many as you like, they will be recorded locally.
-5. When you have internet again, click "Upload" to upload your recorded dive logs. You will probably be asked for login information for the cloud store.
+5. When you have internet again, click "Upload" to upload your recorded dive logs. You can can choose to add several different upload targets, depending on your what your club(s) use.
 
 # System Administrators
 
@@ -44,7 +44,7 @@ By default the data will be uploaded to the first sheet in the spreadsheet where
 
 ## Mail to
 
-You can compose mail for sending the logs. The key format is `MailTo|<mail recipient(s)>` where <mail recipient(s)> is a comma-separated list of email addresses who will be sent the mail. The rows in the log can either be formatted as comma-separated values (CSV, the default) or as a text table (add `|tab` to the end of the key).
+You can compose mail for sending the logs. The key format is `MailTo|<mail recipient(s)>` where <mail recipient(s)> is a comma-separated list of email addresses who will be sent the mail. The rows in the log can either be formatted as comma-separated values (CSV, the default) or as a fancy text table (add `|tab` to the end of the key).
 
 ## Post CSV store
 
