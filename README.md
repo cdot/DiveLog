@@ -19,11 +19,9 @@ The app can be used at [https://cdot.github.io/DiveLog](https://cdot.github.io/D
 
 # System Administrators
 
-The upload function is configured from an "upload key" that you give to users. This is a `|`-separated key string that may have many components, depending on the requirements of the store implementation. The first component is always the name of the store class to use, e.g. `DriveSheet` or `PostCSV`. The remaining components differ for each different type of upload targets. It should be fairly easy to implement other upload interfaces e.g `WebDAVStore` or `OneDriveStore` if you need them.
+The upload function is configured from an "upload key" that you give to users. This is a `|`-separated key string that may have many components, depending on the requirements of the store implementation. The first component is always the name of the store class to use, e.g. `DriveSheet` or `PostCSV`. The remaining components differ for each different type of upload target.
 
-## Stores
-
-### Spreadsheet on Google Drive
+## Spreadsheet on Google Drive
 
 (Technobabble: Unfortunately Google makes this more clumsy than it should be, due to the constraints of OAuth and CORS. We have to use Cloudflare as a proxy.)
 
@@ -44,9 +42,9 @@ DriveSheet|sheet-proxy-d909.myusername.workers.dev|AKffhgkY4a1umthcAfpkHoaeksPWt
 ```
 By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this: `DriveSheet|<cloudflare ID>|<appscript ID>|<spreadsheet ID>|<sheet name>`. 
 
-### POST store
+## Post CSV store
 
-If you have your own server you can POST to the server to upload CSV data to the store. The key format is `PostCSV|<endpoint URL>|<username>|<password>` e.g. `PostCSV|https://my.server/uploadDiveLogs|myuser|secret`. The repository includes a trivial node.js implementation of a suitable server in [PostCSVServer.js](src/PostCSVServer.js).
+If you have your own server you can POST to the server to upload CSV data. The key format is `PostCSV|<endpoint URL>|<username>|<password>` e.g. `PostCSV|https://my.server/uploadDiveLogs|myuser|secret`. The repository includes a trivial node.js implementation of a suitable server in [PostCSVServer.js](src/PostCSVServer.js).
 
 ### Excel sheet on Microsoft OneDrive
 
