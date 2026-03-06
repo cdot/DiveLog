@@ -58,6 +58,6 @@ There is an untried implementation for uploading to en Excel sheet on OneDrive, 
 DiveLog was created for use by member clubs of the British Sub-Aqua Club (BSAC) by Crawford Currie. At time of writing
 the author is a member of BSAC but is not affiliated in any other way.
 
-If you like this application and find it useful, please follow the link on the right and buy me a coffee.
+If you like this application and find it useful, please follow the ko-fi link under "Sponsor this project" and buy me a coffee.
 
 DiveLog is distributed under the terms of the [GNU General Public License (GPL) version 3](https://www.gnu.org/licenses/gpl-3.0.en.html).
