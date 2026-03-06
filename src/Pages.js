@@ -157,7 +157,7 @@ export default class Pages {
 
   /**
    * Upload pending pages to a spreadsheet on drive
-   * @param {CloudStore} store CloudStore to upload to
+   * @param {UploadTarget} store UploadTarget to upload to
    * @return {Promise} promise that resolves to undefined
    */
   upload(store) {
@@ -176,6 +176,6 @@ export default class Pages {
       this.setCurrentPage(this.pages[0]);
       alert("Uploads complete, thank you");
     })
-    .catch(err => alert("Upload failed: " + err));
+    .catch(err => alert("Upload failed, check your target: " + err));
   }
 }

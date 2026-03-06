@@ -1,7 +1,7 @@
 /* global msal */
 
 /**
- * CloudStore implementation for uploading to Google Sheets, written
+ * UploadTarget implementation for uploading to Google Sheets, written
  * by Claude.ai and untested. Claude says:
  Setup:
 
@@ -11,7 +11,7 @@
  Load MSAL from CDN:
 html   <script src="https://alcdn.msauth.net/browser/3.27.0/js/msal-browser.min.js"></script>
  */
-import CloudStore from "./CloudStore.js";
+import UploadTarget from "./UploadTarget.js";
 
 /**
  * Browser-compatible class for uploading rows of data to an Excel spreadsheet
@@ -22,22 +22,16 @@ import CloudStore from "./CloudStore.js";
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
 const GRAPH_SCOPES = ["Files.ReadWrite", "User.Read"];
+const SHEET_NAME = "Dives";
 
 export default class OneDrive {
 
-  /**
-   * @param {object} config
-   * @param {string} config.clientId    - Azure app (client) ID.
-   * @param {string} [config.tenantId]  - Azure tenant ID, or "common" / "organizations".
-   *                                      Defaults to "common".
-   * @param {string} [config.redirectUri] - OAuth redirect URI. Defaults to window.location.origin.
-   */
-  constructor() {
-    const clientId = CloudStore.getLey(1);
-    const tenantId = "common";
-    const redirectUri = {};
-
-    if (!clientId) throw new Error("OneDriveSpreadsheetUploader: `clientId` is required.");
+  constructor(name, components) {
+    super(name, components);
+    this.clientId = this.components[0]; // Azure app (client) ID.
+    this.xlsx = this.components[1];
+    const tenantId = "common"; // Azure tenant ID, or "common" / "organizations".
+    const redirectUri = {}; // OAuth redirect URI. Defaults to window.location.origin.
 
     this._scopes = GRAPH_SCOPES;
     this._account = null;
@@ -50,7 +44,7 @@ export default class OneDrive {
 
     this._msal = new Msal.PublicClientApplication({
       auth: {
-        clientId,
+        clientId: this.clientId,
         authority: `https://login.microsoftonline.com/${tenantId}`,
         redirectUri: redirectUri ?? window.location.origin
       },
@@ -179,8 +173,7 @@ export default class OneDrive {
    * @override
    */
   canUpload() {
-    // Key 1 is the Azure app client id, key 2 the .xlsx id
-    return CloudStore.getKey(1) && CloudStore.getKey(2);
+    return this.xlsx && this.clientId;
   }
 
   /**
@@ -192,7 +185,14 @@ export default class OneDrive {
    *
    * @returns {Promise<{ rowsWritten: number, startRow: number, endRow: number }>}
    */
-  upload(rows) {
+  upload(pages) {
+    const rows = [];
+    // Break down pages into a list of rows
+    pages.forEach(page => {
+      const pageRows = page.flatten();
+      rows.push(...pageRows);
+    });
+
     //  * Convert a 1-based column index to an Excel column letter.
     // * e.g.  1 → "A",  26 → "Z",  27 → "AA"
     function columnLetter(n) {
@@ -206,11 +206,11 @@ export default class OneDrive {
     }
 
     const driveId = "me"; // Drive ID. Use "me" for the signed-in user's personal OneDrive.
-    const itemId = CloudStore.getKey(2); // OneDrive item ID of the .xlsx file
+    const itemId = this.xlsx; // OneDrive item ID of the .xlsx file
 
     // Find out how many rows are already used
     return this._signIn()
-    .then(() => this._getUsedRange(driveId, itemId, CloudStore.SHEET_NAME))
+    .then(() => this._getUsedRange(driveId, itemId, SHEET_NAME))
     .then(usedRange => {
       const usedRowCount = usedRange?.rowCount ?? 0;
       let nextRow = usedRowCount + 1; // 1-based
@@ -221,7 +221,7 @@ export default class OneDrive {
       const endRow     = nextRow + rows.length - 1;
       const rangeAddr  = `${columnLetter(1)}${startRow}:${columnLetter(colCount)}${endRow}`;
 
-      return this._writeRange(driveId, itemId, CloudStore.SHEET_NAME, rangeAddr, rows)
+      return this._writeRange(driveId, itemId, SHEET_NAME, rangeAddr, rows)
       .then(() => rows.length);
     });
   }

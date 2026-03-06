@@ -1,15 +1,20 @@
-import CloudStore from "./CloudStore.js";
+import UploadTarget from "./UploadTarget.js";
 
 /**
- * CloudStore implementation for appending CSV data
+ * UploadTarget implementation for appending CSV data
  */
-export default class PostCSV extends CloudStore {
+export default class PostCSV extends UploadTarget {
+
+  constructor(name, components) {
+    super(name, components);
+    this.url = this.components[0];
+  }
 
   /**
    * @override
    */
   canUpload() {
-    return CloudStore.getKey(1); // URL
+    return this.url; // URL
   }
 
   /**
@@ -105,10 +110,9 @@ export default class PostCSV extends CloudStore {
       }).join(",") + "\n";
     console.debug("Uploading", csv);
 
-    let url = CloudStore.getKey(1);
     const headers = new Headers();
     headers.set("Content-type", "text/csv; charset=UTF-8");
-    return fetchWithAuth(url, {
+    return fetchWithAuth(this.url, {
       method: "POST",
       body: csv,
       headers: headers

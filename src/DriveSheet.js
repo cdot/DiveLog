@@ -1,21 +1,24 @@
-import CloudStore from "./CloudStore.js";
+import UploadTarget from "./UploadTarget.js";
 
 /**
- * CloudStore implementation for uploading to Google Sheets. This avoids
+ * UploadTarget implementation for uploading to Google Sheets. This avoids
  * the need for client information by indirecting via CloudFlare and Appscript.
  */
-export default class DriveSheet extends CloudStore {
+export default class DriveSheet extends UploadTarget {
 
-  constructor() {
-    super();
+  /**
+   * @override
+   */
+  constructor(name, components) {
+    super(name, components);
     // Cloudflare deployment ID
-    this.cloudflareID = CloudStore.getKey(1);
+    this.cloudflareID = this.components[0];
     // App Script deployment ID
-    this.appscriptID = CloudStore.getKey(2);
+    this.appscriptID = this.components[1];
     // Optional spreadsheet ID
-    this.spreadsheetID = CloudStore.getKey(3);
+    this.spreadsheetID = this.components[2];
     // Optional sheet name in spreadsheet
-    this.sheetName = CloudStore.getKey(4);
+    this.sheetName = this.components[4];
   }
 
   /**

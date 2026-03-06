@@ -6,6 +6,7 @@
     <title>Dive Log</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/DiveManager.css" />
+    <link rel="stylesheet" href="css/dialog.css" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script defer type="module" src="src/DiveManager.js"></script>
   </head>
@@ -40,38 +41,52 @@
       <div id="pages"></div>
       <div class="uploadBar">
         <button title="Upload completed logs to Drive" id="uploadButton">Upload</button>
-        <button id="gearButton">&#9881;</button>
       </div>
     </div>
 
-    <div id="settings" class="hidden">
-      <h3>Upload key</h3>
-      <div>
-        Your Diving Officer should have given you an upload key.
-        Enter it here.
+    <div id="uploadDialog" class="modal-overlay">
+      <div class="modal">
+        <button class="modal-close">&times;</button>
+        <h1>Select Upload Target</h1>
+        <select id="uploadTargets">
+        </select>
+        <div>
+          <button id="publishButton">Upload</button>
+          <button id="addNewTarget">Add new target</button>
+        </div>
       </div>
-      <div>
-        <input id="key">
+    </div>
+
+    <div id="newTargetDialog" class="modal-overlay">
+      <div class="modal">
+        <button class="modal-close">&times;</button>
+        <h1>Add New Target</h1>
+        <input placeholder="Target Name" title="Give it a name that indicates what it is for" id="newTargetName">
+        <input placeholder="Key" title="You should have received this key from the sysadmin or Diving Officer" id="newTargetKey">
+        <button id="commitNewTarget">Add target</button>
       </div>
-      <div>
-        <button id="settingsDoneButton">Done</button>
+    </div>
+
+    <div id="aboutDialog" class="modal-overlay">
+      <div class="modal">
+        <button class="modal-close">&times;</button>
+        <h1>About DiveLog</h1>
+        <p>DiveLog was created for use by member clubs of the British
+          Sub-Aqua Club (BSAC). At time of writing the author is a
+          member of BSAC but is not affiliated in any other way.
+        </p>
+        <p>
+          If you like this application and find it useful,
+          please <a href="https://ko-fi.com/crawfordcurrie">buy me a
+            coffee</a>.
+        </p>
+        <p>
+          You can report issues or ideas, or contribute patch requests,
+          <a href="https://github.com/cdot/DiveLog">here</a>.
+        </p>
+        <p>
+          DiveLog is distributed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License (GPL) version 3.</a>
       </div>
-      <h3>About DiveLog</h3>
-      <p>DiveLog was created for use by member clubs of the British
-        Sub-Aqua Club (BSAC). At time of writing the author is a
-        member of BSAC but is not affiliated in any other way.
-      </p>
-      <p>
-        If you like this application and find it useful,
-        please <a href="https://ko-fi.com/crawfordcurrie">buy me a
-          coffee</a>.
-      </p>
-      <p>
-        You can report issues or ideas, or contribute patch requests,
-        <a href="https://github.com/cdot/DiveLog">here</a>.
-      </p>
-      <p>
-        DiveLog is distributed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License (GPL) version 3.</a>
     </div>
   </body>
 </html>

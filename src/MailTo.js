@@ -1,15 +1,15 @@
-import CloudStore from "./CloudStore.js";
+import UploadTarget from "./UploadTarget.js";
 
 /**
- * CloudStore implementation to send mail to a collating user.
+ * UploadTarget implementation to send mail to a collating user.
  */
-export default class MailTo extends CloudStore {
+export default class MailTo extends UploadTarget {
 
-  constructor() {
-    super();
+  constructor(name, components) {
+    super(name, components);
     // Receiving email
-    this.email = CloudStore.getKey(1);
-    this.tabulate = (CloudStore.getKey(2) === "tab");
+    this.email = this.components[0];
+    this.tabulate = (this.components[1] === "tab");
   }
 
   /**
