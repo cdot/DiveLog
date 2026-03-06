@@ -4,7 +4,7 @@ Web app to capture dive logs and upload them to the cloud. The app is written sp
 
 ![empty dive log](images/filled.png)
 
-Cloud services supported by default are Google Drive and a custom server, but it should be fairly straightforward to add other services.
+Several common cloud services are supported by default, and it should be fairly straightforward to add other services.
 
 ![google sheet](images/result.png)
 
@@ -41,6 +41,10 @@ DeployCreate a new worker (UI keeps changing, so you'll have to work out how)
 DriveSheet|sheet-proxy-d909.myusername.workers.dev|AKffhgkY4a1umthcAfpkHoaeksPWtAT-q4KBZa5SJVHKyXF-MYZfk8KeDqrn8CjJkMuFIteb
 ```
 By default the data will be uploaded to the first sheet in the spreadsheet where the App Script is deployed. You can optionally add a spreadsheet id and a sheet name to the key if you want to control this: `DriveSheet|<cloudflare ID>|<appscript ID>|<spreadsheet ID>|<sheet name>`. 
+
+## Mail to
+
+You can compose mail for sending the logs. The key format is `MailTo|<mail recipient(s)>` where <mail recipient(s)> is a comma-separated list of email addresses who will be sent the mail. The rows in the log can either be formatted as comma-separated values (CSV, the default) or as a text table (add `|tab` to the end of the key).
 
 ## Post CSV store
 

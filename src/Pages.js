@@ -136,7 +136,7 @@ export default class Pages {
       const div = document.createElement("div");
       div.id = `P${page.uid}`;
       div.classList.add("list-item");
-      div.textContent = page.toString();
+      div.textContent = page.shortText();
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "\u{1F5D1}";
       deleteButton.title = "Delete";
@@ -161,20 +161,14 @@ export default class Pages {
    * @return {Promise} promise that resolves to undefined
    */
   upload(store) {
-    const rows = [];
-    for (const page of this.pages) {
-      if (page.isWorthUploading()) {
-        const pageRows = page.prepareUpload();
-        rows.push(...pageRows);
-      }
-    }
+    const pages = this.pages.filter(p => p.isWorthUploading());
 
-    if (rows.length === 0)
+    if (pages.length === 0)
       return Promise.reject("Nothing worth uploading");
 
-    return store.upload(rows)
-    .then(removed => {
-      for (const uid of removed)
+    return store.upload(pages)
+    .then(saved => {
+      for (const uid of saved)
         this.removePage(this.getPageByUID(uid));
       if (this.pages.length === 0)
         // Construct a new blank page, ignoring the UI

@@ -15,9 +15,27 @@ export default class PostCSV extends CloudStore {
   /**
    * @override
    */
-  upload(rows) {
+  upload(pages) {
 
-    function prompt(err) {
+    function loadAuthCache() {
+      const auths = localStorage.getItem("DiveLog_a");
+      if (auths)
+        return JSON.parse(auths);
+      return {};
+    }
+
+    function saveAuthCache(cache) {
+      localStorage.setItem("DiveLog_a", JSON.stringify(cache));
+    }
+
+    /**
+     * Prompt for authentication information.
+     * @param {string} url URL we want auth for
+     * @param {string?} any previously encountered error
+     * @return {Promise<>} promise that resolves to undefined
+     * @private
+     */
+    function prompt(url, err) {
       return new Promise((resolve, reject) => {
         fetch("./src/PostCSVLogin.html")
         .then(response => response.text())
@@ -34,7 +52,9 @@ export default class PostCSV extends CloudStore {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            localStorage.setItem("DiveLog_a", `${username}:${password}`);
+            const cache = loadAuthCache();
+            cache[url] = `${username}:${password}`;
+            saveAuthCache(cache);
 
             container.remove();
             resolve();
@@ -48,17 +68,19 @@ export default class PostCSV extends CloudStore {
       });
     }
 
+    /**
+     * `fetch()` extended to support basic authentication
+     */
     function fetchWithAuth(url, options) {
-      const auth = localStorage.getItem("DiveLog_a");
-      if (auth) {
-        options.headers.set("Authorization", `Basic ${btoa(auth)}`);
-      }
+      const cache = loadAuthCache();
+      if (cache[url])
+        options.headers.set("Authorization", `Basic ${btoa(cache[url])}`);
 
       return fetch(url, options)
       .then(response => {
         if (!response.ok) {
           if (response.status === 401) {
-            return prompt(`${response.status}: ${response.statusText}`)
+            return prompt(url, `${response.status}: ${response.statusText}`)
             .then(() => fetchWithAuth(url, options));
           }
           throw new Error(response.status);
@@ -67,8 +89,13 @@ export default class PostCSV extends CloudStore {
       });
     }
 
-    if (rows.length === 0)
-      return Promise.reject("Nothing to upload");
+    const rows = [];
+    // Break down pages into a list of rows
+    pages.forEach(page => {
+      const pageRows = page.flatten();
+      rows.push(...pageRows);
+    });
+
     let csv = "";
     for (const r of rows)
       csv += r.map(f => {
@@ -85,6 +112,7 @@ export default class PostCSV extends CloudStore {
       method: "POST",
       body: csv,
       headers: headers
-    });
+    })
+    .then(() => pages.map(p => p.uid));
   }
 }

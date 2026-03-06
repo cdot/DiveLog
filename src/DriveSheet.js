@@ -1,9 +1,9 @@
+import CloudStore from "./CloudStore.js";
+
 /**
  * CloudStore implementation for uploading to Google Sheets. This avoids
  * the need for client information by indirecting via CloudFlare and Appscript.
  */
-import CloudStore from "./CloudStore.js";
-
 export default class DriveSheet extends CloudStore {
 
   constructor() {
@@ -30,7 +30,14 @@ export default class DriveSheet extends CloudStore {
   /**
    * @override
    */
-  upload(rows) {
+  upload(pages) {
+    const rows = [];
+    // Break down pages into a list of rows
+    pages.forEach(page => {
+      const pageRows = page.flatten();
+      rows.push(...pageRows);
+    });
+
     return fetch(
       `https://${this.cloudflareID}/`,
       {
@@ -51,9 +58,12 @@ export default class DriveSheet extends CloudStore {
       return response.json();
     })
     .then(result => {
+      // Appscript sets the error field if there was an issue
       if (result.error)
         throw new Error(result.error);
-      return [...new Set(result)];
+      // otherwise it returns a list of the unique uids of the rows
+      // that were saved
+      return [...new Set(result)]; // uniquify
     });
   }
 }

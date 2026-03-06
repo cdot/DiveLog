@@ -41,11 +41,12 @@ export default class CloudStore {
 
   /**
    * Upload row data to the cloud store
-   * @return {Promise<number>} Promise that resolves to the number of rows
-   * written when the upload is complete.
+   * @param {Page[]} pages Pages to upload
+   * @return {Promise<number[]>} Promise that resolves to an array of
+   * the pages stored when the upload is complete.
    */
-  upload(rows) {
-    console.debug("Cannot upload", rows);
+  upload(pages) {
+    console.debug("Cannot upload");
     return Promise.reject("Incorrect upload key");
   }
 }

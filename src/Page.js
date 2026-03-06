@@ -38,6 +38,41 @@ const TIME_IN_COL = COLUMNS.findIndex(c => c.head === "Time in");
 const TIME_OUT_COL = COLUMNS.findIndex(c => c.head === "Time out");
 const DIVE_TIME_COL = COLUMNS.findIndex(c => c.head === "Dive time");
 
+function tabulate(data){
+  const rows = data.map(r => r.map(v => v == null ? "" : String(v)));
+  const cols = Math.max(...rows.map(r => r.length));
+
+  // column widths
+  const w = Array.from({length: cols}, (_,i) =>
+    Math.max(...rows.map(r => (r[i] || "").length))
+  );
+
+  // detect numeric columns
+  const num = Array.from({length: cols}, (_,i) =>
+    data.every(r => r[i] === undefined || typeof r[i] === "number")
+  );
+
+  const pad = (c,i) =>
+    num[i] ? c.padStart(w[i]) : c.padEnd(w[i]);
+
+  const makeRow = r =>
+    "| " + Array.from({length: cols}, (_,i) =>
+      pad(r[i] || "", i)
+    ).join(" | ") + " |";
+
+  const border =
+    "+-" + w.map(x => "-".repeat(x)).join("-+-") + "-+";
+
+  const out = [];
+  out.push(border);
+  rows.forEach(r => {
+    out.push(makeRow(r));
+    out.push(border);
+  });
+
+  return out.join("\n");
+}
+
 /**
  * A Page is a capture of dive data for a site, or day, or dive.
  */
@@ -269,10 +304,11 @@ export default class Page {
   }
 
   /**
-   * Prepare flat data row for the page for adding to a spreadsheet.
-   * @return {<string|boolean|number|Date>[][]} array of rows
+   * Prepare flat data rows for the page for adding to a spreadsheet.
+   * @return {<string|boolean|number|Date>[][]} array of rows. Each row
+   * carries all the site details.
    */
-  prepareUpload() {
+  flatten() {
     return this.rows.map(row =>
       [ this.uid, this.date, this.site,
         ...row,
@@ -280,9 +316,37 @@ export default class Page {
   }
 
   /**
-   * Construct a simple string for the Upload section
+   * Construct a simple string description for the page list
    */
-  toString() {
-    return `${this.site || "?"}:${this.date}`;
+  shortText() {
+    return `${this.site || "? "}:${this.date}`;
+  }
+
+  /**
+   * Construct a full string description e.g. for email
+   * @param {boolean} tab if true, tabulate the rows
+   * @return {string} the page description
+   */
+  fullText(tab) {
+    const descr = [];
+    descr.push(`Site: ${this.site}`);
+    descr.push(`Date: ${this.date}`);
+    descr.push(`Dive Manager: ${this.manager}`);
+    if (this.boat)
+      descr.push(`Boat: ${this.boat}`);
+    if (this.weather)
+      descr.push(`Weather: ${this.weather}`);
+    if (this.comments)
+      descr.push(`Comments: ${this.comments}`);
+    if (tab)
+      // Tabulate columns assuming monospace font
+      descr.push(tabulate([COLUMNS.map(c => c.head), ...this.rows]));
+    else {
+      // Generate columns in CSV format.
+      descr.push(COLUMNS.map(c => c.head).join(","));
+      for (const row of this.rows)
+        descr.push(row.join(","));
+    }
+    return descr.join("\n");
   }
 }
