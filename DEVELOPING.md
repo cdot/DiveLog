@@ -26,7 +26,8 @@ which also provides UI support.
 When log sheets are captured offline, they are stored in localStorage
 in the browser until they need to be uploaded. Pages are uploaded
 using an "UploadTarget", such as "DriveSheet" or "MailTo". These
-upload targets handle the mechanics of actually uploading the Pages.
+upload targets handle the mechanics of actually uploading the Pages,
+and their code is dynamically loaded into the app on demand.
 
 Uploads are configured using "keys". These are |-separated
 strings. The first field of a key string is always the name of the
