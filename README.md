@@ -1,8 +1,8 @@
 # DiveLog
 
 Web app to capture dive logs offline, and upload them to the
-cloud. The app looks as much as possible like a standard BSAC dive
-log sheet and is written specifically for [BSAC](http://bsac.com) Dive
+cloud. The app looks as much as possible like a standard [BSAC](http://bsac.com) dive
+log sheet and is written specifically for BSAC Dive
 Managers who need to capture and submit dive logs to their Diving
 Officer. It allows offline capture of dive logs, and upload once
 internet is available again. Dive logs can be automatically sent to an
