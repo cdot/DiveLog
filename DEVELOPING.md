@@ -16,18 +16,18 @@ training materials. It is defined in `index.html`.
 # Architecture
 
 Each dive log sheet is referred to as a `Page`. A Page contains
-metadata such as the Site and Divemanager, and a 2D array of rows,
+metadata such as the Site and Dive Manager, and a 2D array of rows,
 just like the BSAC dive log sheet.
 
 A list of pages awaiting upload is stored in localStorage in the
-browser.  This list is managed by a singleton instance of `Pages`,
+browser.  The app manages this list using a singleton instance of `Pages`,
 which also provides UI support.
 
-When log sheets are captured offline, they are stored in localStorage
-in the browser until they need to be uploaded. Pages are uploaded
+When log sheets are captured offline, they are stored as Pages in localStorage
+until they need to be uploaded. Pages are uploaded
 using an "UploadTarget", such as "DriveSheet" or "MailTo". These
-upload targets handle the mechanics of actually uploading the Pages,
-and their code is dynamically loaded into the app on demand.
+upload targets handle the mechanics of actually uploading the Pages.
+Upload targets are implemented in classes, and their code is dynamically loaded into the app on demand.
 
 Uploads are configured using "keys". These are |-separated
 strings. The first field of a key string is always the name of the
