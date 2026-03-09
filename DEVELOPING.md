@@ -1,8 +1,17 @@
+# Coding standards
+
+All code in this project must conform to the following coding standards:
+- OO ES6 Javascript
+- No external dependencies
+- Clear JSDoc documentation of all classes, methods, and parameters
+- 2 space indentation
+- CamelCase for class names, methods, and parameters
+ 
 # UI
 
 The UI is based on a standard BSAC dive log sheet, which should be
 familiar to all dive managers and is repeatedly referenced in BSAC
-training materials.
+training materials. It is defined in `index.html`.
 
 # Architecture
 

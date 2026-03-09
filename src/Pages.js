@@ -91,6 +91,12 @@ class Pages {
     console.debug(`Removing ${page.uid} ${this.pages.length}`);
     this.pages.splice(this.pages.indexOf(page), 1);
     page.removeFromLocal();
+    // Get the top page from store and populate the UI
+    if (this.pages.length === 0)
+      //  If there are no pages there, construct a new blank page
+      this.addPage(new Page(undefined));
+
+    this.setCurrentPage(this.pages[0]);
   }
 
   /**
@@ -123,10 +129,19 @@ class Pages {
     const self = this;
     let disableUpload = true;
     for (const page of this.pages) {
-      const li = document.createElement("div");
-      li.id = "P" + page.uid;
-      li.classList.add("list-item");
-      li.textContent = page.shortText();
+      const lid = document.createElement("div");
+      lid.id = "P" + page.uid;
+      lid.classList.add("list-item");
+      const lisp = document.createElement("span");
+      lisp.textContent = page.shortText();
+      lisp.addEventListener(
+        "click", function() {
+          const uid = parseInt(this.id.substring(1));
+          self.setCurrentPage(uid);
+        });
+      lisp.title = "Click to edit";
+      lid.append(lisp);
+
       const deleteButton = document.createElement("button");
       deleteButton.textContent = RUBBISH_ICON;
       deleteButton.title = "Delete this page. Be careful, you cannot undo!";
@@ -134,18 +149,12 @@ class Pages {
       deleteButton.addEventListener("click", function() {
         const uid = parseInt(this.closest(".list-item").id.substring(1));
         const dead = self.getPageByUID(uid);
-        if (window.confirm(`Delete?\n${dead.siteText()}`))
+        if (window.confirm(`Are you sure you want to delete this page? This cannot be undone.\n\n${dead.siteText()}`))
           self.removePage(dead);
-      });
-      
-      li.append(deleteButton);
-      li.addEventListener(
-        "click", function() {
-          const uid = parseInt(this.id.substring(1));
-          self.setCurrentPage(uid);
-        });
-      li.title = "Click to edit";
-      list.appendChild(li);
+      });     
+      lid.append(deleteButton);
+
+      list.appendChild(lid);
       if (page.isWorthUploading())
         disableUpload = false;
     }
