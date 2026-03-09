@@ -34,5 +34,5 @@ upload target, and the remaining fields are the configuration
 information required for that target. The user can have as many upload
 targets as they need e.g. if they dive with different clubs.
 
-The API documentation for all classes used can be generated using the
-`npm run doc` command, which creates a folder called `doc`.
+The [API documentation](doc/index.html) for all classes used can be generated
+in a checkout using the `npm run doc` command.
