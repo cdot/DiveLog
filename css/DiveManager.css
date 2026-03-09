@@ -1,5 +1,6 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12pt;
   background: #f4f6f8;
 }
 
@@ -7,7 +8,10 @@ body {
   display:none;
 }
 
-h3 { text-align:center; }
+h1 {
+  text-align:center;
+  font-size:larger;
+}
 
 table {
   width:100%;
@@ -16,7 +20,6 @@ table {
 
 input, textarea {
   width:100%;
-  font-size:16px;
   margin-bottom:2px;
   border:1px solid #ccc;
   transition: width 0.2s ease;
@@ -24,10 +27,6 @@ input, textarea {
 
 input.expanded {
   width: 100vw;
-}
-
-#diveTable {
-  font-size:14px;
 }
 
 th {
@@ -44,7 +43,6 @@ td {
 
 td input {
   padding:2px;
-  font-size:14px;
 }
 
 button {
@@ -58,9 +56,12 @@ button:disabled {
   background: silver;
 }
 
+.dangerous {
+  background:#B00000;
+}
+
 .trash-can {
   padding:0;
-  font-size:14pt;
   margin-top: -5px;
   float:right;
   padding: 0 5px 0 5px;
@@ -68,7 +69,7 @@ button:disabled {
 
 #addPageButton {
   padding: 5px 10px 5px 10px;
-  font-size: 24pt;
+  font-size:larger;
   float:right;
 }
 
@@ -76,12 +77,16 @@ button:disabled {
   margin-top:8px;
 }
 
-#uploadButton {
+.fullWidthButton {
   width: 100%;
   padding:14px;
   font-weight: bold;
-  font-size:16px;
+  font-size:larger;
   margin-right:10px;
+}
+
+#uploadTargetSelect {
+  width: 100%;
 }
 
 button.secondary {
@@ -93,10 +98,10 @@ button.secondary {
   padding:8px;
   margin-bottom:5px;
   border-radius:6px;
-  font-size:14px;
+  font-size:smaller;
 }
 
-/* Hide the spin buttuns on numeric inputs */
+/* Hide the spin buttons on numeric inputs */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

@@ -24,9 +24,9 @@ const DESCRIPTION = [
 ].join("\n");
 
 const go_parser = new Getopt.BasicParser(
-  "p:(port)h(help)f:(file)u:(user)", process.argv);
+  "p:(port)h(help)f:(file)u:(user)w:", process.argv);
 
-let port = 80, csvFile = "dives.csv", users = [];
+let port = 80, csvFile = "dives.csv", users = [], pause = 0;
 let option;
 while ((option = go_parser.getopt())) {
   let up;
@@ -36,7 +36,9 @@ while ((option = go_parser.getopt())) {
     up = option.optarg.split(":");
     users[up[0]] = up[1];
     break;
-  case 'f': csvFile = true; break;
+  case 'f': csvFile = option.optarg; break;
+    // Undocumented wait before response, for debugging
+  case 'w': pause = parseInt(option.optarg); break;
   case "h": console.log(DESCRIPTION); process.exit(); break;
   default: throw Error(`Unknown option -${option.option}\n${DESCRIPTION}`);
   }
@@ -65,11 +67,12 @@ server.post("/upload", (req, res) => {
   const data = req.body;
   console.debug("Upload", typeof data, data);
   return Fs.readFile(csvFile)
-  .then(old => Fs.writeFile(csvFile, old.toString() + data))
-  .catch(e => {
-    console.debug(e);
-    return Fs.writeFile(csvFile, data);
-  })
+  .then(old => Fs.writeFile(csvFile, old.toString() + data)
+        .catch(e => {
+          console.debug(e);
+          return Fs.writeFile(csvFile, data);
+        }))
+  .then(() => new Promise(resolve => setTimeout(resolve, pause)))
   .then(() => res.status(200).send("Uploaded"))
   .catch(e => {
     console.debug("POST failed", e);

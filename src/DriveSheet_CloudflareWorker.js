@@ -3,18 +3,18 @@
  * required because App Script doesn't handle CORS correctly.
  * See README.md for usage.
  */
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST,OPTIONS"
-};
-
 export default {
 
   /**
    * @param {object} request request
    */
   async fetch(request) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "POST,OPTIONS"
+    };
+
     if (request.method === "POST") {
       // Decode the request JSON
       const data = await request.json();

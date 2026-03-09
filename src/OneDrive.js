@@ -20,16 +20,19 @@ import UploadTarget from "./UploadTarget.js";
  * Authentication is handled via the MSAL browser library.
  */
 
+/** @private */
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
+/** @private */
 const GRAPH_SCOPES = ["Files.ReadWrite", "User.Read"];
+/** @private */
 const SHEET_NAME = "Dives";
 
-export default class OneDrive {
+class OneDrive extends UploadTarget {
 
   constructor(name, components) {
     super(name, components);
-    this.clientId = this.components[0]; // Azure app (client) ID.
-    this.xlsx = this.components[1];
+    this.clientId = components[0]; // Azure app (client) ID.
+    this.xlsx = components[1];
     const tenantId = "common"; // Azure tenant ID, or "common" / "organizations".
     const redirectUri = {}; // OAuth redirect URI. Defaults to window.location.origin.
 
@@ -60,8 +63,8 @@ export default class OneDrive {
   /**
    * Sign the user in using a popup window.
    * Stores the resulting account for subsequent token requests.
-   *
    * @returns {Promise<object>} MSAL AccountInfo object
+   * @private
    */
   _signIn() {
     return this._msal.loginPopup({ scopes: this._scopes })
@@ -73,8 +76,8 @@ export default class OneDrive {
 
   /**
    * Acquire a fresh access token silently (falling back to a popup if needed).
-   *
    * @returns {Promise<string>} Bearer access token
+   * @private
    */
   _getAccessToken() {
     const accounts = this._msal.getAllAccounts();
@@ -107,6 +110,7 @@ export default class OneDrive {
    * @param {string}  endpoint  Graph path (e.g. "/me/drive/...")
    * @param {object}  [body]    Optional JSON body for PATCH / POST
    * @returns {Promise<object|null>}
+   * @private
    */
   _graphRequest(method, endpoint, body) {
     return this._getAccessToken()
@@ -144,6 +148,7 @@ export default class OneDrive {
     );
   }
 
+  /** @private */
   _worksheetBase(driveId, itemId) {
     const drive = driveId === "me" ? "me/drive" : `drives/${driveId}`;
     return `/${drive}/items/${encodeURIComponent(itemId)}/workbook/worksheets`;
@@ -158,6 +163,7 @@ export default class OneDrive {
    * @param {string}    rangeAddress  e.g. "A1:C3"
    * @param {Array[][]} values        2D array of cell values
    * @returns {Promise<object>} Updated range object
+   * @private
    */
   _writeRange(driveId, itemId, sheetName, rangeAddress, values) {
     const sheet = encodeURIComponent(sheetName);
@@ -177,13 +183,7 @@ export default class OneDrive {
   }
 
   /**
-   * Append rows of data to an Excel spreadsheet stored in OneDrive.
-   * Automatically finds the first empty row and appends data there.
-   *
-   * @param {Array[][]} rows      - 2D array of row data to append.
-   *                                e.g. [["Alice", 30], ["Bob", 25]]
-   *
-   * @returns {Promise<{ rowsWritten: number, startRow: number, endRow: number }>}
+   * @override
    */
   upload(pages) {
     const rows = [];
@@ -227,3 +227,4 @@ export default class OneDrive {
   }
 }
 
+export default OneDrive;

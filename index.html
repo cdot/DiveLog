@@ -6,28 +6,31 @@
     <title>Dive Log</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/DiveManager.css" />
-    <link rel="stylesheet" href="css/dialog.css" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/modal.css" />
+    <link rel="stylesheet" href="css/busy.css" />
     <script defer type="module" src="src/DiveManager.js"></script>
   </head>
   <body>
     <div id="main">
-      <h3><span id="about">Dive Log &#x1f6c8;</a><button title="Create a new log page" id="addPageButton">+</button></h3>
+      <h1>
+        <span id="aboutLink">Dive Log &#x1f6c8;</span>
+        <button title="Create a new log page" id="addPageButton">+</button>
+      </h1>
       <table>
         <tr>
-          <td><input id="site" title="Site" placeholder="Site"></td>
+          <td><input id="site" title="Site" placeholder="Site" autocapitalize="sentences"></td>
           <td><input id="date" type="date"></td>
         </tr>
         <tr>
-          <td><input id="manager" title="Dive Manager" placeholder="Dive Manager"></td>
-          <td><input id="boat" title="Boat used" placeholder="Boat"></td>
+          <td><input id="manager" title="Dive Manager" placeholder="Dive Manager" autocapitalize="words"></td>
+          <td><input id="boat" title="Boat used" placeholder="Boat" autocapitalize="sentences"></td>
         </tr>
         <tr>
-          <td colspan="2"><input title="Weather" id="weather" placeholder="Weather"></td>
+          <td colspan="2"><input title="Weather" id="weather" placeholder="Weather" autocapitalize="sentences"></td>
         </tr>
         <tr>
           <td colspan="2">
-            <textarea id="comments" placeholder="Comments"></textarea>
+            <textarea id="comments" placeholder="Comments" autocapitalize="sentences"></textarea>
           </td>
         </tr>
       </table>
@@ -37,37 +40,54 @@
           <tbody></tbody>
         </table>
       </div>
-      <h3>Not uploaded yet:</h3>
+      <h1 title="Click on the page below to edit it">Not uploaded yet</h1>
       <div id="pages"></div>
       <div class="uploadBar">
-        <button title="Upload completed logs to Drive" id="uploadButton">Upload</button>
+        <button id="uploadButton" class="fullWidthButton" title="Upload completed logs to Drive">Upload</button>
       </div>
     </div>
 
-    <div id="uploadDialog" class="modal-overlay">
+    <div id="uploadModal" class="modal-overlay">
       <div class="modal">
         <button class="modal-close">&times;</button>
         <h1>Select Upload Target</h1>
-        <select id="uploadTargets">
+        This is where your logs will be uploaded to. Your Diving Officer or
+        sysadmin should have given you the key(s) for your club's upload
+        target.
+        <select id="uploadTargetSelect">
         </select>
         <div>
-          <button id="publishButton">Upload</button>
-          <button id="addNewTarget">Add new target</button>
+          <button id="addTargetButton" title="Add a new upload target. You will need the key for the new target">Add</button>
+          <button id="editTargetButton" title="Edit the selected target. If you want to delete the target, clear the name.">Edit</button>
+        </div>
+        <div class="uploadBar">
+          <button class="fullWidthButton" id="publishButton" title="Send logs to the target">Upload</button>
         </div>
       </div>
     </div>
 
-    <div id="newTargetDialog" class="modal-overlay">
+    <div id="targetModal" class="modal-overlay">
       <div class="modal">
         <button class="modal-close">&times;</button>
-        <h1>Add New Target</h1>
-        <input placeholder="Target Name" title="Give it a name that indicates what it is for" id="newTargetName">
-        <input placeholder="Key" title="You should have received this key from the sysadmin or Diving Officer" id="newTargetKey">
-        <button id="commitNewTarget">Add target</button>
+        <h1>Add/Modify Target</h1>
+        <input class="hidden" id="originalTargetNameInput">
+        <input placeholder="Target Name" title="Give it a name that indicates what it is for" id="targetNameInput">
+        <input placeholder="Key" title="You should have received this key from the sysadmin or Diving Officer" id="targetKeyInput">
+        <button id="commitTargetButton">Save target</button>
       </div>
     </div>
 
-    <div id="aboutDialog" class="modal-overlay">
+    <div id="busyModal" class="modal-overlay">
+      <div class="modal">
+        <h1>Uploading...</h1>
+        <svg width="300" height="300" viewBox="0 0 300 300">
+          <circle cx="150" cy="150" r="75" class="outerCircle">
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <div id="aboutModal" class="modal-overlay">
       <div class="modal">
         <button class="modal-close">&times;</button>
         <h1>About DiveLog</h1>

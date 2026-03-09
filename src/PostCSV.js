@@ -3,11 +3,11 @@ import UploadTarget from "./UploadTarget.js";
 /**
  * UploadTarget implementation for appending CSV data
  */
-export default class PostCSV extends UploadTarget {
+class PostCSV extends UploadTarget {
 
   constructor(name, components) {
     super(name, components);
-    this.url = this.components[0];
+    this.url = components[0];
   }
 
   /**
@@ -37,7 +37,7 @@ export default class PostCSV extends UploadTarget {
      * Prompt for authentication information.
      * @param {string} url URL we want auth for
      * @param {string?} any previously encountered error
-     * @return {Promise<>} promise that resolves to undefined
+     * @return {Promise<undefined>} promise that resolves to undefined
      * @private
      */
     function prompt(url, err) {
@@ -120,3 +120,5 @@ export default class PostCSV extends UploadTarget {
     .then(() => pages.map(p => p.uid));
   }
 }
+
+export default PostCSV;

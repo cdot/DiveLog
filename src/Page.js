@@ -1,11 +1,9 @@
-// Item preamble for local store
-const LS_KEY_ROOT = "dive_page_";
-
 // Ordered list of columns for each row in the UI
 const COLUMNS = [
   { head: "Name",
     title: "Diver name",
     special: input => {
+      input.setAttribute("autocapitalize", "words");
       input.addEventListener("focus", () => input.classList.add("expanded"));
       input.addEventListener("blur", () => input.classList.remove("expanded"));
     }
@@ -76,11 +74,14 @@ function tabulate(data){
 /**
  * A Page is a capture of dive data for a site, or day, or dive.
  */
-export default class Page {
+class Page {
+
+  // Item preamble for local store
+  static KEY_ROOT = "DiveLog_page";
 
   /**
    * Construct a new Page object
-   * @param {<number|object>?} data if an object, will populate from that.
+   * @param {object?} data if an object, will populate from that.
    * If a number, will load the page with that id from localStorage.
    * If null it will create a new, blank page from the UI.
    * If undefined, it will create a new blank page but will ignore the UI.
@@ -98,13 +99,13 @@ export default class Page {
     if (typeof data === "number") {
       // Load an existing page from localStorage
       console.debug(`Construct from localStorage ${data}`);
-      data = JSON.parse(localStorage.getItem(`${LS_KEY_ROOT}${data}`));
+      data = JSON.parse(localStorage.getItem(`${Page.KEY_ROOT}${data}`));
     }
 
     if (data && typeof data === "object") {
       console.debug(`Construct from data`);
       // Construct a page from a data structure that may be another page
-      this.uid = Date.now();
+      this.uid = data.uid || Date.now();
       this.date = data.date;
       this.site = data.site;
       this.manager = data.manager;
@@ -163,7 +164,7 @@ export default class Page {
 
     /**
      * Rows in the table
-     * @member {<string|number|boolean>[][]}
+     * @member {object[][]}
      */
     this.rows = [];
   }
@@ -172,14 +173,14 @@ export default class Page {
    * Save the page to localStorage
    */
   saveToLocal() {
-    localStorage.setItem(`${LS_KEY_ROOT}${this.uid}`, JSON.stringify(this));
+    localStorage.setItem(`${Page.KEY_ROOT}${this.uid}`, JSON.stringify(this));
   }
 
   /**
    * Remove the page from localStorage
    */
   removeFromLocal() {
-    localStorage.removeItem(`${LS_KEY_ROOT}${this.uid}`);
+    localStorage.removeItem(`${Page.KEY_ROOT}${this.uid}`);
   }
 
   /**
@@ -305,8 +306,7 @@ export default class Page {
 
   /**
    * Prepare flat data rows for the page for adding to a spreadsheet.
-   * @return {<string|boolean|number|Date>[][]} array of rows. Each row
-   * carries all the site details.
+   * @return {object[][]} array of rows. Each row carries all the site details.
    */
   flatten() {
     return this.rows.map(row =>
@@ -323,11 +323,10 @@ export default class Page {
   }
 
   /**
-   * Construct a full string description e.g. for email
-   * @param {boolean} tab if true, tabulate the rows
-   * @return {string} the page description
+   * Construct a full string description of the site
+   * @return {string} the site description
    */
-  fullText(tab) {
+  siteText() {
     const descr = [];
     descr.push(`Site: ${this.site}`);
     descr.push(`Date: ${this.date}`);
@@ -338,6 +337,16 @@ export default class Page {
       descr.push(`Weather: ${this.weather}`);
     if (this.comments)
       descr.push(`Comments: ${this.comments}`);
+    return descr.join("\n");
+  }
+
+  /**
+   * Construct a full string description e.g. for email
+   * @param {boolean} tab if true, tabulate the rows
+   * @return {string} the page description
+   */
+  fullText(tab) {
+    const descr = [ this.siteText() ];
     if (tab)
       // Tabulate columns assuming monospace font
       descr.push(tabulate([COLUMNS.map(c => c.head), ...this.rows]));
@@ -350,3 +359,5 @@ export default class Page {
     return descr.join("\n");
   }
 }
+
+export default Page;

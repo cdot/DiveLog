@@ -7,8 +7,8 @@
  * to the spreadsheet that the appscript is associated with.
  * @param {string?} data.sheetName optional sheet name, defaults
  * to the first sheet in the spreadsheet.
- * @param {[][]} data.rows the rows to add to the sheet
- * @return {[]} JSON-encoded array of the first column of rows
+ * @param {object[][]} data.rows the rows to add to the sheet
+ * @return {number[]} JSON-encoded array of the first column of rows
  */
 /* global SpreadsheetApp, ContentService */
 function doPost(e) {

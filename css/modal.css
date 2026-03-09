@@ -14,12 +14,12 @@
   transition:opacity .2s ease;
 }
 
-.modal-overlay.active{
+.modal-overlay.active {
   opacity:1;
   pointer-events:auto;
 }
 
-.modal{
+.modal {
   position:relative;   /* needed for absolute positioning */
   background:#fff;
   border-radius:12px;

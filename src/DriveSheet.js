@@ -4,7 +4,7 @@ import UploadTarget from "./UploadTarget.js";
  * UploadTarget implementation for uploading to Google Sheets. This avoids
  * the need for client information by indirecting via CloudFlare and Appscript.
  */
-export default class DriveSheet extends UploadTarget {
+class DriveSheet extends UploadTarget {
 
   /**
    * @override
@@ -12,13 +12,13 @@ export default class DriveSheet extends UploadTarget {
   constructor(name, components) {
     super(name, components);
     // Cloudflare deployment ID
-    this.cloudflareID = this.components[0];
+    this.cloudflareID = components[0];
     // App Script deployment ID
-    this.appscriptID = this.components[1];
+    this.appscriptID = components[1];
     // Optional spreadsheet ID
-    this.spreadsheetID = this.components[2];
+    this.spreadsheetID = components[2];
     // Optional sheet name in spreadsheet
-    this.sheetName = this.components[4];
+    this.sheetName = components[4];
   }
 
   /**
@@ -71,3 +71,4 @@ export default class DriveSheet extends UploadTarget {
   }
 }
 
+export default DriveSheet;

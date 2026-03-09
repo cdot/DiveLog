@@ -1,11 +1,11 @@
 import Page from "./Page.js";
 
-const LS_KEY = "dive_pages";
+const RUBBISH_ICON = "\u{1F5D1}";
 
 /**
  * An array of page IDs
  */
-export default class Pages {
+class Pages {
 
   constructor() {
     /**
@@ -22,15 +22,17 @@ export default class Pages {
      */
     this.currentPageUID = undefined;
 
-    // Load pages from local storage. If there are no pages there,
-    // construct a new, blank, page.
-    const known = localStorage.getItem(LS_KEY);
-    if (known && known.length > 0) {
-      const uids = JSON.parse(known);
-      for (const i of uids)
-        this.addPage(new Page(i));
-    } else
-      // Construct a page from whatever is in the UI
+    // Load pages from local storage.
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(Page.KEY_ROOT)) {
+        const uid = parseInt(key.substring(Page.KEY_ROOT.length));
+        this.addPage(new Page(uid));
+      }
+    }
+
+    if (this.pages.length === 0)
+      //  If there are no pages there, construct a new page from whatever
+      // is in the UI
       this.addPage(new Page(null));
 
     this.setCurrentPage(this.pages[0]);
@@ -52,20 +54,10 @@ export default class Pages {
   setCurrentPage(page) {
     if (typeof page === "number")
       page = this.getPageByUID(page);
-    console.debug(`Setting UI to page ${page.uid}`);
+    console.debug(`Setting UI to page ${page.uid} ${page.shortText()}`);
     this.currentPageUID = page.uid;
     page.loadIntoUI();
     this.reloadList();
-  }
-
-  /**
-   * Save the list of page UIDs to localStorage
-   * @private
-   */
-  saveToLocal() {
-    const uids = this.pages.map(p => p.uid);
-    console.debug("Saving page index", uids.join(","));
-    localStorage.setItem(LS_KEY, JSON.stringify(uids));
   }
 
   /**
@@ -76,7 +68,6 @@ export default class Pages {
   addPage(page) {
     console.debug(`Adding page ${page.uid}`);
     this.pages.unshift(page);
-    this.saveToLocal();
   }
 
   /**
@@ -100,7 +91,6 @@ export default class Pages {
     console.debug(`Removing ${page.uid} ${this.pages.length}`);
     this.pages.splice(this.pages.indexOf(page), 1);
     page.removeFromLocal();
-    this.saveToLocal();
   }
 
   /**
@@ -128,27 +118,34 @@ export default class Pages {
    * @private
    */
   reloadList() {
-    const element = document.getElementById("pages");
-    element.innerHTML = "";
+    const list = document.getElementById("pages");
+    list.innerHTML = "";
     const self = this;
     let disableUpload = true;
     for (const page of this.pages) {
-      const div = document.createElement("div");
-      div.id = `P${page.uid}`;
-      div.classList.add("list-item");
-      div.textContent = page.shortText();
+      const li = document.createElement("div");
+      li.id = "P" + page.uid;
+      li.classList.add("list-item");
+      li.textContent = page.shortText();
       const deleteButton = document.createElement("button");
-      deleteButton.textContent = "\u{1F5D1}";
-      deleteButton.title = "Delete this record. Be careful, you cannot undo!";
+      deleteButton.textContent = RUBBISH_ICON;
+      deleteButton.title = "Delete this page. Be careful, you cannot undo!";
       deleteButton.classList.add("trash-can");
-      div.append(deleteButton);
-      div.addEventListener(
+      deleteButton.addEventListener("click", function() {
+        const uid = parseInt(this.closest(".list-item").id.substring(1));
+        const dead = self.getPageByUID(uid);
+        if (window.confirm(`Delete?\n${dead.siteText()}`))
+          self.removePage(dead);
+      });
+      
+      li.append(deleteButton);
+      li.addEventListener(
         "click", function() {
           const uid = parseInt(this.id.substring(1));
           self.setCurrentPage(uid);
         });
-      div.title = "Click to edit";
-      element.appendChild(div);
+      li.title = "Click to edit";
+      list.appendChild(li);
       if (page.isWorthUploading())
         disableUpload = false;
     }
@@ -156,17 +153,18 @@ export default class Pages {
   }
 
   /**
-   * Upload pending pages to a spreadsheet on drive
-   * @param {UploadTarget} store UploadTarget to upload to
+   * Upload pending pages. Only pages that are considered worth
+   * uploading (i.e. those with actual diver information) are uploaded.
+   * @param {UploadTarget} target UploadTarget to upload to
    * @return {Promise} promise that resolves to undefined
    */
-  upload(store) {
+  upload(target) {
     const pages = this.pages.filter(p => p.isWorthUploading());
 
     if (pages.length === 0)
       return Promise.reject("Nothing worth uploading");
 
-    return store.upload(pages)
+    return target.upload(pages)
     .then(saved => {
       for (const uid of saved)
         this.removePage(this.getPageByUID(uid));
@@ -179,3 +177,5 @@ export default class Pages {
     .catch(err => alert("Upload failed, check your target: " + err));
   }
 }
+
+export default Pages;
